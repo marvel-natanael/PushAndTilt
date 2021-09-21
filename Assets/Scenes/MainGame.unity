@@ -667,11 +667,11 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1508475320}
+  - component: {fileID: 1508475315}
   - component: {fileID: 1508475319}
   - component: {fileID: 1508475318}
   - component: {fileID: 1508475317}
   - component: {fileID: 1508475316}
-  - component: {fileID: 1508475315}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -691,6 +691,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2146f42f8bf018c45bd73e3c3e16db03, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  heightIndicator: {fileID: 0}
   chargeLimit: 75
   chargeMultiplier: 10
   charge: 0
