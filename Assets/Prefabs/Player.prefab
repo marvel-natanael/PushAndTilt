@@ -51,7 +51,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  jumpHeightIndicator: {fileID: 0}
+  jumpHeightIndicator: {fileID: 8538498060220443154}
   chargeHeight: 0
   chargeLimit: 150
   chargeMultiplier: 10
@@ -187,14 +187,14 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   clientAuthority: 1
-  sendInterval: 0.05
+  sendInterval: 0.01
   syncPosition: 1
   syncRotation: 0
   syncScale: 1
   interpolatePosition: 1
-  interpolateRotation: 1
+  interpolateRotation: 0
   interpolateScale: 1
-  bufferTimeMultiplier: 3
+  bufferTimeMultiplier: 1
   bufferSizeLimit: 64
   catchupThreshold: 6
   catchupMultiplier: 0.1

@@ -6,16 +6,12 @@ public class ObstacleScript : MonoBehaviour
     private float bottom;
     private float rightWall;
     private float leftWall;
-    private Rigidbody2D rb;
 
     private void Start()
     {
-        bottom = GameManager.ScreenPointZero.y;
-        leftWall= GameManager.ScreenPointZero.x;
-        rightWall= GameManager.ScreenPointOne.x;
-
-        rb = GetComponent<Rigidbody2D>();
-        rb.velocity = new Vector2(speed.x, speed.y);
+        bottom = GameScreen.Corner_BottomLeft.y;
+        leftWall= GameScreen.Corner_BottomLeft.x;
+        rightWall= GameScreen.Corner_TopRight.x;
     }
 
     private void Update()
@@ -33,6 +29,4 @@ public class ObstacleScript : MonoBehaviour
             Destroy(gameObject);
         }
     }
-
-    public Vector2 Speed { set => speed = value; }
 }

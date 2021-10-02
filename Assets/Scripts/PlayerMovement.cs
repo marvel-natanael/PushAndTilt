@@ -30,13 +30,19 @@ public class PlayerMovement : MonoBehaviour
     private float dirX, dirY;
 #endif
 
-    //GLBB : endVelocity ^ 2 = startVelocity ^ 2 - 2 * gravity * (sceen height - player's pos)
-    //0 = (maxSpeed)^2 - 2 * gravity * (screen height - player's pos)
-    //2gh = max^2
-    //sqrt(2gh) = max
+    /* Finding max velocity requires understanding the distance between the player and the top
+     * of the screen. To do so, we can subtract the world point on the top of the host's screen
+     * as the max height.
+     * 
+     *  Finding max height formula: maximumHeight = startingHeight + initialSpeed^2 / (2 * universalGravity)
+     *  
+     * in this case, we need to find the initial speed
+     * 
+     *  Finding max speed formula: initialSpeed = sqrt(2 * universalGravity / (maximumHeight - startingHeight))
+     */
     private float CalculateMaxVelocity()
     {
-        return Mathf.Sqrt(2 * rb.gravityScale * (GameManager.ScreenPointOne.y - transform.position.y));
+        return GameScreen.Corner_TopRight.y - GameScreen.Corner_BottomLeft.y;
     }
 
     //private float CalculateMaxHeight()
@@ -78,6 +84,7 @@ public class PlayerMovement : MonoBehaviour
         transform.position = new Vector2(Mathf.Clamp(transform.position.x, -8.5f, 8.5f), transform.position.y);
         rb.velocity = new Vector2(dirX, rb.velocity.y);
 #endif
+        //Jump Manager
         if (isGrounded)
         {
             if (isCharging == true)
@@ -99,15 +106,19 @@ public class PlayerMovement : MonoBehaviour
                 charge = 0;
             }
         }
+        //Wall clamp
+        {
+            
+        }
     }
 
     private void Update()
     {
         {
             var spriteHeight = GetComponent<SpriteRenderer>().bounds.extents.y;
-            if (transform.position.y + spriteHeight > GameManager.ScreenPointOne.y)
+            if (transform.position.y + spriteHeight > GameScreen.Corner_BottomLeft.y)
             {
-                transform.position = new Vector3(transform.position.x, GameManager.ScreenPointOne.y - spriteHeight, transform.position.z);
+                transform.position = new Vector3(transform.position.x, GameScreen.Corner_BottomLeft.y - spriteHeight, transform.position.z);
             }
         }
     }

@@ -68,13 +68,13 @@ public class ObstacleManager : MonoBehaviour
             //Vertical Spawn
             case 0:
                 {
-                    var leftWall = GameManager.ScreenPointZero.x;
-                    var rightWall = GameManager.ScreenPointOne.x;
-                    var spawnPoint = GameManager.ScreenPointOne.y + 1.0f;
+                    var leftWall = GameScreen.Corner_TopRight.x;
+                    var rightWall = GameScreen.Corner_BottomLeft.x;
+                    var spawnPoint = GameScreen.Corner_BottomLeft.y + 1.0f;
                     {
                         var temp = Instantiate(verticalSweeper, transform);
                         temp.transform.position = new Vector3(0, spawnPoint, 0);
-                        temp.GetComponent<ObstacleScript>().Speed = new Vector2(0, -speed / 1.5f);
+                        temp.GetComponent<Rigidbody2D>().velocity = new Vector2(0, -speed / 1.5f);
                     }
                     //Create holes
                     for (int i = 0; i < count; i++)
@@ -89,13 +89,13 @@ public class ObstacleManager : MonoBehaviour
             //Left-Right Spawn
             case 1:
                 {
-                    var ground = GameManager.ScreenPointZero.y;
-                    var ceiling = GameManager.ScreenPointOne.y;
-                    var spawnPoint = GameManager.ScreenPointZero.x - 1.0f;
+                    var ground = GameScreen.Corner_TopRight.y;
+                    var ceiling = GameScreen.Corner_BottomLeft.y;
+                    var spawnPoint = GameScreen.Corner_TopRight.x - 1.0f;
                     {
                         var temp = Instantiate(horizontalSweeper, transform);
                         temp.transform.position = new Vector3(spawnPoint, 0, 0);
-                        temp.GetComponent<ObstacleScript>().Speed = new Vector2(speed, 0);
+                        temp.GetComponent<Rigidbody2D>().velocity = new Vector2(speed, 0);
                     }
                     //Create holes
                     for (int i = 0; i < count; i++)
@@ -110,13 +110,13 @@ public class ObstacleManager : MonoBehaviour
             //Right-Left Spawn
             case 2:
                 {
-                    var ground = GameManager.ScreenPointZero.y;
-                    var ceiling = GameManager.ScreenPointOne.y;
-                    var spawnPoint = GameManager.ScreenPointOne.x + 1.0f;
+                    var ground = GameScreen.Corner_TopRight.y;
+                    var ceiling = GameScreen.Corner_BottomLeft.y;
+                    var spawnPoint = GameScreen.Corner_BottomLeft.x + 1.0f;
                     {
                         var temp = Instantiate(horizontalSweeper, transform);
                         temp.transform.position = new Vector3(spawnPoint, 0, 0);
-                        temp.GetComponent<ObstacleScript>().Speed = new Vector2(-speed, 0);
+                        temp.GetComponent<Rigidbody2D>().velocity = new Vector2(-speed, 0);
                     }
                     //Create holes
                     for (int i = 0; i < count; i++)

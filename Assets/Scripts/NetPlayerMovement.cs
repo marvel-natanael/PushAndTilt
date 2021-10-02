@@ -31,16 +31,26 @@ public class NetPlayerMovement : NetworkBehaviour
     private float dirX, dirY;
 #endif
 
+    /* Finding max velocity requires understanding the distance between the player and the top
+     * of the screen. To do so, we can subtract the world point on the top of the host's screen
+     * as the max height.
+     * 
+     *  Finding max height formula: maximumHeight = startingHeight + initialSpeed^2 / (2 * universalGravity)
+     *  
+     * in this case, we need to find the initial speed
+     * 
+     *  Finding max speed formula: initialSpeed = sqrt(2 * universalGravity / (maximumHeight - startingHeight))
+     */
     private float CalculateMaxVelocity()
     {
-        return Mathf.Sqrt(2 * rb.gravityScale * (GameManager.ScreenPointOne.y - transform.position.y));
+        return rb.gravityScale * (GameScreen.Corner_TopRight.y - GameScreen.Corner_BottomLeft.y);
     }
 
     private void Start()
     {
         jumpHeightIndicator = transform.GetChild(0).gameObject;
         rb = GetComponent<Rigidbody2D>();
-        //chargeLimit = CalculateMaxVelocity();
+        chargeLimit = CalculateMaxVelocity();
         isCharging = false;
     }
 
@@ -74,6 +84,14 @@ public class NetPlayerMovement : NetworkBehaviour
             {
                 Debug.Log("A pressed!");
                 rb.velocity = new Vector2(-speed, rb.velocity.y);
+            }
+            //clamping
+            {
+                var radius = GetComponent<SpriteRenderer>().bounds.size.x / 2;
+                if (transform.position.x - radius < GameScreen.Corner_BottomLeft.x || transform.position.x + radius > GameScreen.Corner_TopRight.x)
+                {
+                    rb.velocity = new Vector2(-rb.velocity.x, rb.velocity.y);
+                }
             }
 #else
             dirX = Input.acceleration.x * speed;
