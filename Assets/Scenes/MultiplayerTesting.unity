@@ -155,12 +155,14 @@ MonoBehaviour:
   syncInterval: 0.1
   material: {fileID: 8530771638233185060, guid: 021fddba3b37a4e41b6a090bf0f7991a,
     type: 3}
-  reduceHoleBy: 0
+  reduceHoleBy: 2
   holeTolerance: 1
-  speed: 0
-  speedMultiplier: 0
-  maxSpeed: 0
+  speed: 5
+  speedMultiplier: 2
+  maxSpeed: 12
   direction: 0
+  showGUI: 0
+  guiOffset: {x: 0, y: 50}
 --- !u!114 &497453540
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -287,6 +289,7 @@ GameObject:
   - component: {fileID: 1123417999}
   - component: {fileID: 1123417998}
   - component: {fileID: 1123418001}
+  - component: {fileID: 1123418002}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: Untagged
@@ -380,3 +383,18 @@ MonoBehaviour:
   showGUI: 1
   offsetX: 0
   offsetY: 0
+--- !u!114 &1123418002
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1123417997}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: f89b8df8c4c32d7439c98b655e7e49e1, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  timeScale: 0
+  showGUI: 1
+  guiOffset: {x: 0, y: 120}

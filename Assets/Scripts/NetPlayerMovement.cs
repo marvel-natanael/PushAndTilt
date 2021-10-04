@@ -26,28 +26,27 @@ public class NetPlayerMovement : NetworkBehaviour
     [SerializeField]
     private float speed;
 
+    [SerializeField]
+    private float speedMultiplier;
+
+    [SerializeField]
+    private float speedLimit;
+
+    private float charRadius;
+
     private Rigidbody2D rb;
 #if !UNITY_EDITOR
     private float dirX, dirY;
 #endif
 
-    /* Finding max velocity requires understanding the distance between the player and the top
-     * of the screen. To do so, we can subtract the world point on the top of the host's screen
-     * as the max height.
-     * 
-     *  Finding max height formula: maximumHeight = startingHeight + initialSpeed^2 / (2 * universalGravity)
-     *  
-     * in this case, we need to find the initial speed
-     * 
-     *  Finding max speed formula: initialSpeed = sqrt(2 * universalGravity / (maximumHeight - startingHeight))
-     */
     private float CalculateMaxVelocity()
     {
-        return rb.gravityScale * (GameScreen.Corner_TopRight.y - GameScreen.Corner_BottomLeft.y);
+        return rb.gravityScale * ((GameScreen.Corner_TopRight.y - GameScreen.Corner_BottomLeft.y) / 2);
     }
 
     private void Start()
     {
+        charRadius = GetComponent<SpriteRenderer>().bounds.size.x / 2;
         jumpHeightIndicator = transform.GetChild(0).gameObject;
         rb = GetComponent<Rigidbody2D>();
         chargeLimit = CalculateMaxVelocity();
@@ -75,23 +74,38 @@ public class NetPlayerMovement : NetworkBehaviour
         {
             //Horizontal Movements
 #if UNITY_EDITOR
-            if (Input.GetKey(KeyCode.D))
+            if (Input.GetKey(KeyCode.D) ^ Input.GetKey(KeyCode.A))
             {
-                Debug.Log("D pressed!");
-                rb.velocity = new Vector2(speed, rb.velocity.y);
-            }
-            if (Input.GetKey(KeyCode.A))
-            {
-                Debug.Log("A pressed!");
-                rb.velocity = new Vector2(-speed, rb.velocity.y);
-            }
-            //clamping
-            {
-                var radius = GetComponent<SpriteRenderer>().bounds.size.x / 2;
-                if (transform.position.x - radius < GameScreen.Corner_BottomLeft.x || transform.position.x + radius > GameScreen.Corner_TopRight.x)
+                if (Input.GetKey(KeyCode.D))
                 {
-                    rb.velocity = new Vector2(-rb.velocity.x, rb.velocity.y);
+                    if (speed < speedLimit)
+                    {
+                        Debug.Log("D pressed!");
+                        speed += Time.deltaTime * speedMultiplier;
+                    }
                 }
+                if (Input.GetKey(KeyCode.A))
+                {
+                    if (speed > -speedLimit)
+                    {
+                        Debug.Log("A pressed!");
+                        speed -= Time.deltaTime * speedMultiplier;
+                    }
+                }
+            }
+            else
+            {
+                speed = 0;
+            }
+            rb.velocity = new Vector2(rb.velocity.x + speed, rb.velocity.y);
+            //X pos clamping
+            if (transform.position.x + charRadius > GameScreen.Corner_TopRight.x)
+            {
+                rb.velocity = new Vector2(-Mathf.Abs(rb.velocity.x), rb.velocity.y);
+            }
+            if (transform.position.x - charRadius < GameScreen.Corner_BottomLeft.x)
+            {
+                rb.velocity = new Vector2(Mathf.Abs(rb.velocity.x), rb.velocity.y);
             }
 #else
             dirX = Input.acceleration.x * speed;
@@ -106,7 +120,7 @@ public class NetPlayerMovement : NetworkBehaviour
                     Debug.Log(isCharging);
                     if (charge <= chargeLimit)
                     {
-                        charge += Time.fixedDeltaTime* chargeMultiplier * 10;
+                        charge += Time.fixedDeltaTime * chargeMultiplier * 10;
                         if (transform.localScale.y > 0.2f)
                         {
                             Debug.Log("Change");
