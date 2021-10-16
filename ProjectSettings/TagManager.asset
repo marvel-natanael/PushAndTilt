@@ -9,6 +9,7 @@ TagManager:
   - Bullet
   - Obstacle
   - FallingObject
+  - KillTrigger
   layers:
   - Default
   - TransparentFX
@@ -16,7 +17,7 @@ TagManager:
   - 
   - Water
   - UI
-  - 
+  - X
   - 
   - 
   - 
@@ -48,4 +49,10 @@ TagManager:
     locked: 0
   - name: Players
     uniqueID: 2467649777
+    locked: 0
+  - name: Ground
+    uniqueID: 1733674453
+    locked: 0
+  - name: Trail
+    uniqueID: 1280923909
     locked: 0
