@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class NetPlayerMovement : NetworkBehaviour
 {
+    private GameScreen screen;
+
     [Header("Player jump charge parameters")]
     [SerializeField]
     private GameObject jumpHeightIndicator;
@@ -27,10 +29,13 @@ public class NetPlayerMovement : NetworkBehaviour
     private float speed;
 
     [SerializeField]
-    private float speedMultiplier;
+    private float acceleration;
 
     [SerializeField]
     private float speedLimit;
+
+    [SerializeField, Range(0.01f, 1f)]
+    private float restitution;
 
     private float charRadius;
 
@@ -41,11 +46,12 @@ public class NetPlayerMovement : NetworkBehaviour
 
     private float CalculateMaxVelocity()
     {
-        return rb.gravityScale * ((GameScreen.Corner_TopRight.y - GameScreen.Corner_BottomLeft.y) / 2);
+        return rb.gravityScale * ((screen.Corner_TopRight.y - screen.Corner_BottomLeft.y) / 2);
     }
 
     private void Start()
     {
+        screen = GameObject.FindGameObjectWithTag("Manager").GetComponent<GameScreen>();
         charRadius = GetComponent<SpriteRenderer>().bounds.size.x / 2;
         jumpHeightIndicator = transform.GetChild(0).gameObject;
         rb = GetComponent<Rigidbody2D>();
@@ -78,19 +84,11 @@ public class NetPlayerMovement : NetworkBehaviour
             {
                 if (Input.GetKey(KeyCode.D))
                 {
-                    if (speed < speedLimit)
-                    {
-                        Debug.Log("D pressed!");
-                        speed += Time.deltaTime * speedMultiplier;
-                    }
+                    if (speed < speedLimit) speed += Time.deltaTime * acceleration;
                 }
                 if (Input.GetKey(KeyCode.A))
                 {
-                    if (speed > -speedLimit)
-                    {
-                        Debug.Log("A pressed!");
-                        speed -= Time.deltaTime * speedMultiplier;
-                    }
+                    if (speed > -speedLimit) speed -= Time.deltaTime * acceleration;
                 }
             }
             else
@@ -99,13 +97,17 @@ public class NetPlayerMovement : NetworkBehaviour
             }
             rb.velocity = new Vector2(rb.velocity.x + speed, rb.velocity.y);
             //X pos clamping
-            if (transform.position.x + charRadius > GameScreen.Corner_TopRight.x)
             {
-                rb.velocity = new Vector2(-Mathf.Abs(rb.velocity.x), rb.velocity.y);
-            }
-            if (transform.position.x - charRadius < GameScreen.Corner_BottomLeft.x)
-            {
-                rb.velocity = new Vector2(Mathf.Abs(rb.velocity.x), rb.velocity.y);
+                if (transform.position.x + charRadius > screen.Corner_TopRight.x)
+                {
+                    var deep = transform.position.x + charRadius - screen.Corner_TopRight.x;
+                    rb.velocity = new Vector2(-(Mathf.Abs(rb.velocity.x) + deep) * restitution, rb.velocity.y);
+                }
+                if (transform.position.x - charRadius < screen.Corner_BottomLeft.x)
+                {
+                    var deep = transform.position.x - charRadius + screen.Corner_TopRight.x;
+                    rb.velocity = new Vector2(Mathf.Abs(rb.velocity.x + deep) * restitution, rb.velocity.y);
+                }
             }
 #else
             dirX = Input.acceleration.x * speed;
@@ -117,13 +119,11 @@ public class NetPlayerMovement : NetworkBehaviour
             {
                 if (isCharging == true)
                 {
-                    Debug.Log(isCharging);
                     if (charge <= chargeLimit)
                     {
                         charge += Time.fixedDeltaTime * chargeMultiplier * 10;
                         if (transform.localScale.y > 0.2f)
                         {
-                            Debug.Log("Change");
                             transform.localScale = new Vector3(transform.localScale.x + Time.fixedDeltaTime, transform.localScale.y - Time.fixedDeltaTime, transform.localScale.z);
                         }
                     }
@@ -146,9 +146,8 @@ public class NetPlayerMovement : NetworkBehaviour
 
     private void OnValidate()
     {
-        if (chargeMultiplier < 1)
-        {
-            chargeMultiplier = 1;
-        }
+        if (restitution < 0.01f) restitution = 0.01f;
+        if (restitution > 1f) restitution = 1f;
+        if (chargeMultiplier < 1) chargeMultiplier = 1;
     }
 }

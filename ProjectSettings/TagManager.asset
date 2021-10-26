@@ -5,10 +5,9 @@ TagManager:
   serializedVersion: 2
   tags:
   - Ground
-  - Hole
-  - Bullet
+  - obstacleManager
+  - Manager
   - Obstacle
-  - FallingObject
   layers:
   - Default
   - TransparentFX

@@ -1,36 +1,37 @@
 ﻿using Mirror;
 using UnityEngine;
 
-public class GameManager : MonoBehaviour
+public class GameManager : NetworkBehaviour
 {
+    [SerializeField, SyncVar] private bool running;
+    [SerializeField, SyncVar] private int playerCount;
     [SerializeField, Range(0.1f, 2.0f)] private float timeScale;
-    private static int playerCount;
-    private static bool running;
 
     [Header("GUI settings")]
     private string runStatus;
+
     [SerializeField] private bool showGUI;
     [SerializeField] private Vector2 guiOffset;
 
-    public static int PlayerCount { get => playerCount; }
-    public static bool Running { get => running; }
+    public int PlayerCount { get => playerCount; }
+    public bool Running { get => running; }
 
+    /// <summary>
+    /// Switches the runnning status, only server is able to change the status
+    /// </summary>
     public void Running_Switch()
     {
         running = !running;
     }
 
-    // Start is called before the first frame update
-    private void Start()
+    public override void OnStartServer()
     {
+        base.OnStartServer();
         running = false;
-        timeScale = 1f;
-
-        //Debug only
         playerCount = 5;
+        timeScale = 1f;
     }
 
-    // Update is called once per frame
     private void Update()
     {
         Time.timeScale = timeScale;
