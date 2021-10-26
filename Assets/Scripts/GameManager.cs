@@ -3,9 +3,8 @@ using UnityEngine;
 
 public class GameManager : NetworkBehaviour
 {
-    [SerializeField, SyncVar] private bool running;
-    [SerializeField, SyncVar] private int playerCount;
-    [SerializeField, Range(0.1f, 2.0f)] private float timeScale;
+    [SerializeField, SyncVar(hook = nameof(SetRunState))] private bool running;
+    [SerializeField, SyncVar(hook = nameof(SetPlayerCount))] private int playerCount;
 
     [Header("GUI settings")]
     private string runStatus;
@@ -17,25 +16,33 @@ public class GameManager : NetworkBehaviour
     public bool Running { get => running; }
 
     /// <summary>
-    /// Switches the runnning status, only server is able to change the status
+    /// Hook function for <c>running</c>.
     /// </summary>
-    public void Running_Switch()
+    /// <param name="old">Old value</param>
+    /// <param name="_new">New Value</param>
+    private void SetRunState(bool old, bool _new)
     {
-        running = !running;
+        running = _new;
     }
 
-    public override void OnStartServer()
+    /// <summary>
+    /// Hook function for <c>playerCount</c>.
+    /// </summary>
+    /// <param name="old">Old value</param>
+    /// <param name="_new">New value</param>
+    private void SetPlayerCount(int old, int _new)
     {
-        base.OnStartServer();
-        running = false;
-        playerCount = 5;
-        timeScale = 1f;
+        playerCount = _new;
     }
 
     private void Update()
     {
-        Time.timeScale = timeScale;
         runStatus = running ? "Pause" : "Resume";
+    }
+
+    public void Running_Switch()
+    {
+        SetRunState(running, !running);
     }
 
     private void OnGUI()

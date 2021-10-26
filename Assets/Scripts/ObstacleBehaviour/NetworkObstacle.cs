@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-[RequireComponent(typeof(GameScreen))]
 public class NetworkObstacle : NetworkBehaviour
 {
     [Header("Bindings")]
@@ -23,7 +22,8 @@ public class NetworkObstacle : NetworkBehaviour
     [SerializeField] private float maxSpeed;
 
     [Header("Synchronized Variables")]
-    [SerializeField, SyncVar] private Direction direction;
+    [SerializeField] private Direction direction;
+    [SyncVar(hook = nameof(SetDirection))] int dirNum;
 
 #if UNITY_EDITOR
 
@@ -59,17 +59,20 @@ public class NetworkObstacle : NetworkBehaviour
             if (num < 0.25f)
             {
                 direction = Direction.Right;
+                SetDirection(dirNum, 2);
             }
             //Chance 25% left
             else if (num < 0.5f)
             {
                 direction = Direction.Left;
+                SetDirection(dirNum, 1);
             }
             //Chance 50% up
             else
             {
                 num2 = screen.ScreenWidth_inWorldUnits / holeCount;
                 direction = Direction.Up;
+                SetDirection(dirNum, 0);
             }
             //Generate a list of holes position
             {
@@ -198,23 +201,27 @@ public class NetworkObstacle : NetworkBehaviour
         instance.transform.localScale = new Vector3(2f, 3f, 1f);
     }
 
+    public override void OnStartClient()
+    {
+        CreatePlatform();
+        base.OnStartClient();
+    }
+
+    public override void OnStopClient()
+    {
+        var temp = GameObject.FindGameObjectsWithTag("Ground");
+        foreach (GameObject val in temp)
+        {
+            Destroy(val);
+        }
+        base.OnStopClient();
+    }
+
     private void Start()
     {
         sweeper = GameObject.FindGameObjectWithTag("Manager").GetComponent<MyNetworkManager>().spawnPrefabs[1];
         manager = GameObject.FindGameObjectWithTag("Manager").GetComponent<GameManager>();
         if (isServer) GenerateObstacle();
-    }
-
-    public override void OnStartServer()
-    {
-        base.OnStartServer();
-        screen.CalculateScreen();
-    }
-
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
-        CreatePlatform();
     }
 
     private void Update()
@@ -267,6 +274,30 @@ public class NetworkObstacle : NetworkBehaviour
             {
                 Gizmos.DrawSphere(new Vector3(item, 0), 0.1f);
             }
+        }
+    }
+
+    /// <summary>
+    /// Hook function for <c>dirNum</c>.
+    /// </summary>
+    /// <param name="old">Old value</param>
+    /// <param name="_new">New value</param>
+    private void SetDirection(int old, int _new)
+    {
+        dirNum = _new;
+        switch (dirNum)
+        {
+            case 0:
+                direction = Direction.Up;
+                break;
+
+            case 1:
+                direction = Direction.Left;
+                break;
+
+            case 2:
+                direction = Direction.Right;
+                break;
         }
     }
 }

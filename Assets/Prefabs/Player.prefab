@@ -190,7 +190,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   clientAuthority: 1
-  sendInterval: 0.01
+  sendInterval: 0.1
   syncPosition: 1
   syncRotation: 0
   syncScale: 1
@@ -202,7 +202,7 @@ MonoBehaviour:
   catchupThreshold: 6
   catchupMultiplier: 0.1
   showGizmos: 0
-  showOverlay: 0
+  showOverlay: 1
   overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
 --- !u!1 &8538498060220443154
 GameObject:
