@@ -1,15 +1,17 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class KillTrigger : MonoBehaviour
 {
     public GameObject deathEffect;
-    private Shake shake;
-
+    private AnimManager animManager;
+    public CanvasGroup loseAnimImage;
     private void Start()
     {
-        shake = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Shake>();
+        animManager = GameObject.Find("AnimManager").GetComponent<AnimManager>();
+        loseAnimImage.alpha = 0f;
     }
     void killPlayer(Transform loc)
     {
@@ -21,7 +23,15 @@ public class KillTrigger : MonoBehaviour
         if(collision.gameObject.CompareTag("Player"))
         {
             killPlayer(collision.transform);
-            StartCoroutine(shake.shakeCam(0.15f, 0.4f));
+            StartCoroutine(animManager.shake(GameObject.FindGameObjectWithTag("MainCamera"),0.15f, 0.4f));
+            StartCoroutine("loseAnim");
         }
     }
+    IEnumerator loseAnim()
+    {
+        StartCoroutine(animManager.animFadeIn(loseAnimImage));
+        yield return new WaitForSeconds(3.0f);
+        StartCoroutine(animManager.animFadeOut(loseAnimImage));
+    }
 }
+
