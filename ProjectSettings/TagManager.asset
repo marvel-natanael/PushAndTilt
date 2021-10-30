@@ -5,10 +5,15 @@ TagManager:
   serializedVersion: 2
   tags:
   - Ground
-  - Hole
-  - Bullet
+  - obstacleManager
+  - Manager
+  - obstacleManager
+  - Manager
   - Obstacle
-  - FallingObject
+  - screen
+  - networkManager
+  - screen
+  - networkManager
   - KillTrigger
   layers:
   - Default
