@@ -7,7 +7,11 @@ TagManager:
   - Ground
   - obstacleManager
   - Manager
+  - obstacleManager
+  - Manager
   - Obstacle
+  - screen
+  - networkManager
   - screen
   - networkManager
   - KillTrigger
