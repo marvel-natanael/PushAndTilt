@@ -2,6 +2,7 @@
 
 public class PlayerMovement : MonoBehaviour
 {
+    GameScreen screen;
     [Header("Player jump charge parameters")]
     [SerializeField]
     private GameObject heightIndicator;
@@ -42,7 +43,7 @@ public class PlayerMovement : MonoBehaviour
      */
     private float CalculateMaxVelocity()
     {
-        return GameScreen.Corner_TopRight.y - GameScreen.Corner_BottomLeft.y;
+        return screen.Corner_TopRight.y - screen.Corner_BottomLeft.y;
     }
 
     //private float CalculateMaxHeight()
@@ -116,9 +117,9 @@ public class PlayerMovement : MonoBehaviour
     {
         {
             var spriteHeight = GetComponent<SpriteRenderer>().bounds.extents.y;
-            if (transform.position.y + spriteHeight > GameScreen.Corner_BottomLeft.y)
+            if (transform.position.y + spriteHeight > screen.Corner_BottomLeft.y)
             {
-                transform.position = new Vector3(transform.position.x, GameScreen.Corner_BottomLeft.y - spriteHeight, transform.position.z);
+                transform.position = new Vector3(transform.position.x, screen.Corner_BottomLeft.y - spriteHeight, transform.position.z);
             }
         }
     }
