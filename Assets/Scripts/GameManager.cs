@@ -1,62 +1,29 @@
 ﻿using Mirror;
 using UnityEngine;
 
-public class GameManager : NetworkBehaviour
+public class GameManager : MonoBehaviour
 {
-    [SerializeField, SyncVar(hook = nameof(SetRunState))] private bool running;
-    [SerializeField, SyncVar(hook = nameof(SetPlayerCount))] private int playerCount;
+    [SerializeField, Range(0.1f, 2.0f)] private float timeScale;
+    private static int playerCount;
+    private static bool running;
 
-    [Header("GUI settings")]
-    private string runStatus;
-
-    [SerializeField] private bool showGUI;
-    [SerializeField] private Vector2 guiOffset;
-
-    public int PlayerCount { get => playerCount; }
-    public bool Running { get => running; }
-
-    /// <summary>
-    /// Hook function for <c>running</c>.
-    /// </summary>
-    /// <param name="old">Old value</param>
-    /// <param name="_new">New Value</param>
-    private void SetRunState(bool old, bool _new)
-    {
-        running = _new;
-    }
-
-    /// <summary>
-    /// Hook function for <c>playerCount</c>.
-    /// </summary>
-    /// <param name="old">Old value</param>
-    /// <param name="_new">New value</param>
-    private void SetPlayerCount(int old, int _new)
-    {
-        playerCount = _new;
-    }
-
-    public override void OnStartServer()
-    {
-        //todo remove this code if ready to implement player counter
-        SetPlayerCount(playerCount, 5);
-        base.OnStartServer();
-    }
-
-    private void Update()
-    {
-        runStatus = running ? "Pause" : "Resume";
-    }
+    public static int PlayerCount { get => playerCount; }
+    public static bool Running { get => running; }
 
     public void Running_Switch()
     {
-        SetRunState(running, !running);
+        running = !running;
     }
 
-    private void OnGUI()
+    // Start is called before the first frame update
+    private void Start()
     {
-        if (!showGUI) return;
-        GUILayout.BeginArea(new Rect(10 + guiOffset.x, 40 + guiOffset.y, 215, 9999));
-        if (GUILayout.Button(runStatus)) Running_Switch();
-        GUILayout.EndArea();
+        running = false;
+    }
+
+    // Update is called once per frame
+    private void Update()
+    {
+        Time.timeScale = timeScale;
     }
 }

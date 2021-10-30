@@ -2,8 +2,6 @@
 
 public class ObstacleManager : MonoBehaviour
 {
-    private GameScreen screen;
-    private GameManager gameManager;
     [SerializeField] private GameObject verticalSweeper;
     [SerializeField] private GameObject horizontalSweeper;
     [SerializeField] private GameObject hole;
@@ -16,8 +14,6 @@ public class ObstacleManager : MonoBehaviour
 
     private void Start()
     {
-        screen = GameObject.FindGameObjectWithTag("Manager").GetComponent<GameScreen>();
-        gameManager = FindObjectOfType<GameManager>();
         holeSize = GameObject.FindGameObjectWithTag("Player").GetComponent<SpriteRenderer>().sprite.bounds.size * holeTolerance / 2;
     }
 
@@ -59,9 +55,9 @@ public class ObstacleManager : MonoBehaviour
     private void SpawnObstacle(short mode)
     {
         short count;
-        if (gameManager.PlayerCount > 1)
+        if (GameManager.PlayerCount > 1)
         {
-            count = (short)Random.Range(gameManager.PlayerCount - 1, gameManager.PlayerCount);
+            count = (short)Random.Range(GameManager.PlayerCount - 1, GameManager.PlayerCount);
         }
         else
         {
@@ -72,9 +68,9 @@ public class ObstacleManager : MonoBehaviour
             //Vertical Spawn
             case 0:
                 {
-                    var leftWall = screen.Corner_TopRight.x;
-                    var rightWall = screen.Corner_BottomLeft.x;
-                    var spawnPoint = screen.Corner_BottomLeft.y + 1.0f;
+                    var leftWall = GameScreen.Corner_TopRight.x;
+                    var rightWall = GameScreen.Corner_BottomLeft.x;
+                    var spawnPoint = GameScreen.Corner_BottomLeft.y + 1.0f;
                     {
                         var temp = Instantiate(verticalSweeper, transform);
                         temp.transform.position = new Vector3(0, spawnPoint, 0);
@@ -93,9 +89,9 @@ public class ObstacleManager : MonoBehaviour
             //Left-Right Spawn
             case 1:
                 {
-                    var ground = screen.Corner_TopRight.y;
-                    var ceiling = screen.Corner_BottomLeft.y;
-                    var spawnPoint = screen.Corner_TopRight.x - 1.0f;
+                    var ground = GameScreen.Corner_TopRight.y;
+                    var ceiling = GameScreen.Corner_BottomLeft.y;
+                    var spawnPoint = GameScreen.Corner_TopRight.x - 1.0f;
                     {
                         var temp = Instantiate(horizontalSweeper, transform);
                         temp.transform.position = new Vector3(spawnPoint, 0, 0);
@@ -114,9 +110,9 @@ public class ObstacleManager : MonoBehaviour
             //Right-Left Spawn
             case 2:
                 {
-                    var ground = screen.Corner_TopRight.y;
-                    var ceiling = screen.Corner_BottomLeft.y;
-                    var spawnPoint = screen.Corner_BottomLeft.x + 1.0f;
+                    var ground = GameScreen.Corner_TopRight.y;
+                    var ceiling = GameScreen.Corner_BottomLeft.y;
+                    var spawnPoint = GameScreen.Corner_BottomLeft.x + 1.0f;
                     {
                         var temp = Instantiate(horizontalSweeper, transform);
                         temp.transform.position = new Vector3(spawnPoint, 0, 0);
