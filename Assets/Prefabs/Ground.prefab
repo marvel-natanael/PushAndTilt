@@ -11,8 +11,8 @@ GameObject:
   - component: {fileID: 2413265293222949673}
   - component: {fileID: 2413265293222949672}
   - component: {fileID: 4402460733237556286}
-  - component: {fileID: 1644163383563089413}
-  - component: {fileID: 6740306423503125209}
+  - component: {fileID: 5474207803039646395}
+  - component: {fileID: 2005976737834640999}
   - component: {fileID: -4596180317163273913}
   m_Layer: 0
   m_Name: Ground
@@ -112,7 +112,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 10.8, y: 0.5}
   m_EdgeRadius: 0
---- !u!114 &1644163383563089413
+--- !u!114 &5474207803039646395
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -129,7 +129,7 @@ MonoBehaviour:
   visible: 0
   m_AssetId: d5eff8359db3bdc45b7e02e9f560882a
   hasSpawned: 0
---- !u!114 &6740306423503125209
+--- !u!114 &2005976737834640999
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -144,19 +144,19 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   clientAuthority: 0
-  sendInterval: 0.05
+  sendInterval: 0.1
   syncPosition: 1
   syncRotation: 0
   syncScale: 1
   interpolatePosition: 0
   interpolateRotation: 0
   interpolateScale: 0
-  bufferTimeMultiplier: 3
+  bufferTimeMultiplier: 1
   bufferSizeLimit: 64
   catchupThreshold: 6
   catchupMultiplier: 0.1
-  showGizmos: 0
-  showOverlay: 0
+  showGizmos: 1
+  showOverlay: 1
   overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
 --- !u!50 &-4596180317163273913
 Rigidbody2D:

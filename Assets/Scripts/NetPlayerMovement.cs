@@ -3,6 +3,8 @@ using UnityEngine;
 
 public class NetPlayerMovement : NetworkBehaviour
 {
+    private GameScreen screen;
+
     [Header("Player jump charge parameters")]
     [SerializeField]
     private GameObject jumpHeightIndicator;
@@ -26,36 +28,55 @@ public class NetPlayerMovement : NetworkBehaviour
     [SerializeField]
     private float speed;
 
+    [SerializeField]
+    private float acceleration;
+
+    [SerializeField]
+    private float speedLimit;
+
+    [SerializeField, Range(0.01f, 1f)]
+    private float restitution;
+
+    private float charRadius;
+
     private Rigidbody2D rb;
 #if !UNITY_EDITOR
     private float dirX, dirY;
 #endif
 
-    /* Finding max velocity requires understanding the distance between the player and the top
-     * of the screen. To do so, we can subtract the world point on the top of the host's screen
-     * as the max height.
-     * 
-     *  Finding max height formula: maximumHeight = startingHeight + initialSpeed^2 / (2 * universalGravity)
-     *  
-     * in this case, we need to find the initial speed
-     * 
-     *  Finding max speed formula: initialSpeed = sqrt(2 * universalGravity / (maximumHeight - startingHeight))
-     */
+    /// <summary>
+    /// Calculates the maximum height of player's jump.
+    /// </summary>
+    /// <returns>float value containing the max jump speed</returns>
     private float CalculateMaxVelocity()
     {
-        return rb.gravityScale * (GameScreen.Corner_TopRight.y - GameScreen.Corner_BottomLeft.y);
+        init();
+        return rb.gravityScale * ((screen.Corner_TopRight.y - screen.Corner_BottomLeft.y) / 2);
     }
 
     private void Start()
     {
         jumpHeightIndicator = transform.GetChild(0).gameObject;
+        charRadius = GetComponent<SpriteRenderer>().bounds.size.x / 2;
         rb = GetComponent<Rigidbody2D>();
         chargeLimit = CalculateMaxVelocity();
         isCharging = false;
     }
 
+    /// <summary>
+    /// Initialization to avoid empty objects
+    /// </summary>
+    private void init()
+    {
+        if (!screen)
+        {
+            screen = GameObject.FindGameObjectWithTag("screen").GetComponent<GameScreen>();
+        }
+    }
+
     private void CalculateChargeVisualization()
     {
+        init();
         if (rb.gravityScale != 0)
         {
             chargeHeight = (charge * charge) / (2 * rb.gravityScale);
@@ -69,28 +90,43 @@ public class NetPlayerMovement : NetworkBehaviour
         HandleMovements();
     }
 
+    /// <summary>
+    /// Handles the player movement
+    /// </summary>
     private void HandleMovements()
     {
+        init();
         if (isLocalPlayer)
         {
             //Horizontal Movements
 #if UNITY_EDITOR
-            if (Input.GetKey(KeyCode.D))
+            if (Input.GetKey(KeyCode.D) ^ Input.GetKey(KeyCode.A))
             {
-                Debug.Log("D pressed!");
-                rb.velocity = new Vector2(speed, rb.velocity.y);
-            }
-            if (Input.GetKey(KeyCode.A))
-            {
-                Debug.Log("A pressed!");
-                rb.velocity = new Vector2(-speed, rb.velocity.y);
-            }
-            //clamping
-            {
-                var radius = GetComponent<SpriteRenderer>().bounds.size.x / 2;
-                if (transform.position.x - radius < GameScreen.Corner_BottomLeft.x || transform.position.x + radius > GameScreen.Corner_TopRight.x)
+                if (Input.GetKey(KeyCode.D))
                 {
-                    rb.velocity = new Vector2(-rb.velocity.x, rb.velocity.y);
+                    if (speed < speedLimit) speed += Time.deltaTime * acceleration;
+                }
+                if (Input.GetKey(KeyCode.A))
+                {
+                    if (speed > -speedLimit) speed -= Time.deltaTime * acceleration;
+                }
+            }
+            else
+            {
+                speed = 0;
+            }
+            rb.velocity = new Vector2(rb.velocity.x + speed, rb.velocity.y);
+            //X pos clamping
+            {
+                if (transform.position.x + charRadius > screen.Corner_TopRight.x)
+                {
+                    var deep = transform.position.x + charRadius - screen.Corner_TopRight.x;
+                    rb.velocity = new Vector2(-(Mathf.Abs(rb.velocity.x) + deep) * restitution, rb.velocity.y);
+                }
+                if (transform.position.x - charRadius < screen.Corner_BottomLeft.x)
+                {
+                    var deep = transform.position.x - charRadius + screen.Corner_TopRight.x;
+                    rb.velocity = new Vector2(Mathf.Abs(rb.velocity.x + deep) * restitution, rb.velocity.y);
                 }
             }
 #else
@@ -103,13 +139,11 @@ public class NetPlayerMovement : NetworkBehaviour
             {
                 if (isCharging == true)
                 {
-                    Debug.Log(isCharging);
                     if (charge <= chargeLimit)
                     {
-                        charge += Time.fixedDeltaTime* chargeMultiplier * 10;
+                        charge += Time.fixedDeltaTime * chargeMultiplier * 10;
                         if (transform.localScale.y > 0.2f)
                         {
-                            Debug.Log("Change");
                             transform.localScale = new Vector3(transform.localScale.x + Time.fixedDeltaTime, transform.localScale.y - Time.fixedDeltaTime, transform.localScale.z);
                         }
                     }
@@ -125,6 +159,9 @@ public class NetPlayerMovement : NetworkBehaviour
         }
     }
 
+    /// <summary>
+    /// Handles the player's screen touch.
+    /// </summary>
     private void TouchHandler()
     {
         isCharging = Input.GetMouseButton(0);
@@ -132,9 +169,8 @@ public class NetPlayerMovement : NetworkBehaviour
 
     private void OnValidate()
     {
-        if (chargeMultiplier < 1)
-        {
-            chargeMultiplier = 1;
-        }
+        if (restitution < 0.01f) restitution = 0.01f;
+        if (restitution > 1f) restitution = 1f;
+        if (chargeMultiplier < 1) chargeMultiplier = 1;
     }
 }
