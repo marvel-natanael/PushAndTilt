@@ -4,9 +4,9 @@ using UnityEngine;
 
 public class Shake : MonoBehaviour
 {
-    public IEnumerator shakeCam(float duration, float magnitude)
+    public IEnumerator shake(GameObject obj, float duration, float magnitude)
     {
-        Vector3 orignalPosition = transform.position;
+        Vector3 orignalPosition = obj.transform.position;
         float elapsed = 0f;
 
         while (elapsed < duration)
@@ -14,10 +14,10 @@ public class Shake : MonoBehaviour
             float x = Random.Range(-1f, 1f) * magnitude;
             float y = Random.Range(-1f, 1f) * magnitude;
 
-            transform.position = new Vector3(x, y, -10f);
+            obj.transform.position = new Vector3(x, y, -10f);
             elapsed += Time.deltaTime;
             yield return 0;
         }
-        transform.position = orignalPosition;
+        obj.transform.position = orignalPosition;
     }
 }
