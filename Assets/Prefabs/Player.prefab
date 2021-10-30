@@ -57,10 +57,7 @@ MonoBehaviour:
   chargeMultiplier: 10
   charge: 0
   isCharging: 0
-  speed: 0
-  acceleration: 10
-  speedLimit: 3
-  restitution: 0.95
+  speed: 15
 --- !u!212 &3249294072130804457
 SpriteRenderer:
   m_ObjectHideFlags: 0
@@ -202,7 +199,7 @@ MonoBehaviour:
   catchupThreshold: 6
   catchupMultiplier: 0.1
   showGizmos: 0
-  showOverlay: 1
+  showOverlay: 0
   overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
 --- !u!1 &8538498060220443154
 GameObject:
