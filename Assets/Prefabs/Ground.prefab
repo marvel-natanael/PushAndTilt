@@ -11,8 +11,9 @@ GameObject:
   - component: {fileID: 2413265293222949673}
   - component: {fileID: 2413265293222949672}
   - component: {fileID: 4402460733237556286}
-  - component: {fileID: 5474207803039646395}
-  - component: {fileID: 2005976737834640999}
+  - component: {fileID: 1644163383563089413}
+  - component: {fileID: 6740306423503125209}
+  - component: {fileID: -4596180317163273913}
   m_Layer: 0
   m_Name: Ground
   m_TagString: Ground
@@ -49,6 +50,7 @@ SpriteRenderer:
   m_LightProbeUsage: 1
   m_ReflectionProbeUsage: 1
   m_RayTracingMode: 0
+  m_RayTraceProcedural: 0
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
@@ -70,11 +72,11 @@ SpriteRenderer:
   m_AutoUVMaxDistance: 0.5
   m_AutoUVMaxAngle: 89
   m_LightmapParameters: {fileID: 0}
-  m_SortingLayerID: 0
-  m_SortingLayer: 0
+  m_SortingLayerID: 1733674453
+  m_SortingLayer: 2
   m_SortingOrder: 0
   m_Sprite: {fileID: 21300000, guid: 2f4ff76990855c04da7364e3a832b59c, type: 3}
-  m_Color: {r: 1, g: 1, b: 1, a: 1}
+  m_Color: {r: 0.1764706, g: 0.02745098, b: 0.34901962, a: 1}
   m_FlipX: 0
   m_FlipY: 0
   m_DrawMode: 0
@@ -110,7 +112,7 @@ BoxCollider2D:
   serializedVersion: 2
   m_Size: {x: 10.8, y: 0.5}
   m_EdgeRadius: 0
---- !u!114 &5474207803039646395
+--- !u!114 &1644163383563089413
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -127,7 +129,7 @@ MonoBehaviour:
   visible: 0
   m_AssetId: d5eff8359db3bdc45b7e02e9f560882a
   hasSpawned: 0
---- !u!114 &2005976737834640999
+--- !u!114 &6740306423503125209
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -142,17 +144,38 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   clientAuthority: 0
-  sendInterval: 0.1
+  sendInterval: 0.05
   syncPosition: 1
   syncRotation: 0
   syncScale: 1
   interpolatePosition: 0
   interpolateRotation: 0
   interpolateScale: 0
-  bufferTimeMultiplier: 1
+  bufferTimeMultiplier: 3
   bufferSizeLimit: 64
   catchupThreshold: 6
   catchupMultiplier: 0.1
-  showGizmos: 1
-  showOverlay: 1
+  showGizmos: 0
+  showOverlay: 0
   overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
+--- !u!50 &-4596180317163273913
+Rigidbody2D:
+  serializedVersion: 4
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2413265293222949679}
+  m_BodyType: 2
+  m_Simulated: 1
+  m_UseFullKinematicContacts: 0
+  m_UseAutoMass: 0
+  m_Mass: 1
+  m_LinearDrag: 0
+  m_AngularDrag: 0.05
+  m_GravityScale: 1
+  m_Material: {fileID: 0}
+  m_Interpolate: 0
+  m_SleepingMode: 1
+  m_CollisionDetection: 0
+  m_Constraints: 0

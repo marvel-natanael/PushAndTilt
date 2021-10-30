@@ -1,40 +1,32 @@
-﻿using Mirror;
-using UnityEngine;
+﻿using UnityEngine;
 
-public class ObstacleScript : NetworkBehaviour
+public class ObstacleScript : MonoBehaviour
 {
-    private GameScreen screen;
     private Vector2 speed;
-
-    public Vector2 Speed { get => speed; }
+    private float bottom;
+    private float rightWall;
+    private float leftWall;
 
     private void Start()
     {
-        screen = GameObject.FindGameObjectWithTag("screen").GetComponent<GameScreen>();
-        transform.SetParent(GameObject.FindGameObjectWithTag("obstacleManager").transform);
-    }
-
-    public void SetVelocity(Vector2 vel)
-    {
-        GetComponent<Rigidbody2D>().velocity = vel;
+        bottom = GameScreen.Corner_BottomLeft.y;
+        leftWall= GameScreen.Corner_BottomLeft.x;
+        rightWall= GameScreen.Corner_TopRight.x;
     }
 
     private void Update()
     {
-        if (isServer)
+        if (transform.position.y < bottom - 1.0f)
         {
-            if (transform.position.y > screen.Corner_TopRight.y + 2.0f)
-            {
-                NetworkServer.Destroy(gameObject);
-            }
-            if (transform.position.x < screen.Corner_BottomLeft.x - 2.0f)
-            {
-                NetworkServer.Destroy(gameObject);
-            }
-            if (transform.position.x > screen.Corner_TopRight.x + 2.0f)
-            {
-                NetworkServer.Destroy(gameObject);
-            }
+            Destroy(gameObject);
+        }
+        if (transform.position.x < leftWall - 2.0f)
+        {
+            Destroy(gameObject);
+        }
+        if (transform.position.x > rightWall + 2.0f)
+        {
+            Destroy(gameObject);
         }
     }
 }
