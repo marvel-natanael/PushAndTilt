@@ -44,23 +44,39 @@ public class NetPlayerMovement : NetworkBehaviour
     private float dirX, dirY;
 #endif
 
+    /// <summary>
+    /// Calculates the maximum height of player's jump.
+    /// </summary>
+    /// <returns>float value containing the max jump speed</returns>
     private float CalculateMaxVelocity()
     {
+        init();
         return rb.gravityScale * ((screen.Corner_TopRight.y - screen.Corner_BottomLeft.y) / 2);
     }
 
     private void Start()
     {
-        screen = GameObject.FindGameObjectWithTag("Manager").GetComponent<GameScreen>();
-        charRadius = GetComponent<SpriteRenderer>().bounds.size.x / 2;
         jumpHeightIndicator = transform.GetChild(0).gameObject;
+        charRadius = GetComponent<SpriteRenderer>().bounds.size.x / 2;
         rb = GetComponent<Rigidbody2D>();
         chargeLimit = CalculateMaxVelocity();
         isCharging = false;
     }
 
+    /// <summary>
+    /// Initialization to avoid empty objects
+    /// </summary>
+    private void init()
+    {
+        if (!screen)
+        {
+            screen = GameObject.FindGameObjectWithTag("screen").GetComponent<GameScreen>();
+        }
+    }
+
     private void CalculateChargeVisualization()
     {
+        init();
         if (rb.gravityScale != 0)
         {
             chargeHeight = (charge * charge) / (2 * rb.gravityScale);
@@ -74,8 +90,12 @@ public class NetPlayerMovement : NetworkBehaviour
         HandleMovements();
     }
 
+    /// <summary>
+    /// Handles the player movement
+    /// </summary>
     private void HandleMovements()
     {
+        init();
         if (isLocalPlayer)
         {
             //Horizontal Movements
@@ -139,6 +159,9 @@ public class NetPlayerMovement : NetworkBehaviour
         }
     }
 
+    /// <summary>
+    /// Handles the player's screen touch.
+    /// </summary>
     private void TouchHandler()
     {
         isCharging = Input.GetMouseButton(0);

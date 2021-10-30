@@ -8,6 +8,8 @@ TagManager:
   - obstacleManager
   - Manager
   - Obstacle
+  - screen
+  - networkManager
   layers:
   - Default
   - TransparentFX

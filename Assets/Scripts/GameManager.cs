@@ -35,6 +35,13 @@ public class GameManager : NetworkBehaviour
         playerCount = _new;
     }
 
+    public override void OnStartServer()
+    {
+        //todo remove this code if ready to implement player counter
+        SetPlayerCount(playerCount, 5);
+        base.OnStartServer();
+    }
+
     private void Update()
     {
         runStatus = running ? "Pause" : "Resume";

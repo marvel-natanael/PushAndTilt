@@ -152,10 +152,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
-  syncInterval: 0.1
-  screen: {fileID: 0}
-  manager: {fileID: 0}
-  sweeper: {fileID: 8530771638233185060, guid: 021fddba3b37a4e41b6a090bf0f7991a, type: 3}
+  syncInterval: 0.01
+  screen: {fileID: 1964321133}
+  manager: {fileID: 1195758775}
+  sweeper: {fileID: 0}
   reduceHoleBy: 2
   holeTolerance: 1
   speed: 5
@@ -189,7 +189,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 497453538}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: -5, z: 0}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_Children: []
   m_Father: {fileID: 0}
@@ -293,7 +293,7 @@ GameObject:
   - component: {fileID: 1123417998}
   m_Layer: 0
   m_Name: NetworkManager
-  m_TagString: Manager
+  m_TagString: networkManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -336,7 +336,7 @@ MonoBehaviour:
   ReceiveWindowSize: 4096
   NonAlloc: 1
   debugLog: 0
-  statisticsGUI: 1
+  statisticsGUI: 0
   statisticsLog: 0
 --- !u!4 &1123418000
 Transform:
@@ -385,19 +385,22 @@ MonoBehaviour:
   PersistNetworkManagerToOfflineScene: 0
   runInBackground: 1
   autoStartServerBuild: 1
-  serverTickRate: 30
+  serverTickRate: 60
   offlineScene: 
-  onlineScene: 
+  onlineScene: Assets/Scenes/MultiplayerTesting.unity
   transport: {fileID: 1123417999}
   networkAddress: localhost
   maxConnections: 100
   disconnectInactiveConnections: 0
   disconnectInactiveTimeout: 60
   authenticator: {fileID: 0}
-  playerPrefab: {fileID: 0}
+  playerPrefab: {fileID: 4727917183509554448, guid: fd79e61ddd604c3419efd2323ce95cb9,
+    type: 3}
   autoCreatePlayer: 1
   playerSpawnMethod: 0
-  spawnPrefabs: []
+  spawnPrefabs:
+  - {fileID: 2413265293222949679, guid: d5eff8359db3bdc45b7e02e9f560882a, type: 3}
+  - {fileID: 8530771638233185060, guid: 021fddba3b37a4e41b6a090bf0f7991a, type: 3}
 --- !u!1 &1195758773
 GameObject:
   m_ObjectHideFlags: 0
@@ -411,7 +414,7 @@ GameObject:
   - component: {fileID: 1195758775}
   m_Layer: 0
   m_Name: GameManager
-  m_TagString: Untagged
+  m_TagString: Manager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -446,7 +449,7 @@ MonoBehaviour:
   syncInterval: 0.1
   running: 0
   playerCount: 0
-  showGUI: 0
+  showGUI: 1
   guiOffset: {x: 0, y: 75}
 --- !u!114 &1195758776
 MonoBehaviour:
@@ -478,7 +481,7 @@ GameObject:
   - component: {fileID: 1964321133}
   m_Layer: 0
   m_Name: GameScreen
-  m_TagString: Untagged
+  m_TagString: screen
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -527,6 +530,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   sceneId: 484522434
   serverOnly: 0
-  visible: 1
+  visible: 0
   m_AssetId: 
   hasSpawned: 0
