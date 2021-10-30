@@ -118,11 +118,11 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   clientAuthority: 0
-  sendInterval: 0.05
+  sendInterval: 0.01
   syncPosition: 1
   syncRotation: 0
   syncScale: 1
-  interpolatePosition: 1
+  interpolatePosition: 0
   interpolateRotation: 0
   interpolateScale: 1
   bufferTimeMultiplier: 3
@@ -191,3 +191,5 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 2e477b6a20d71fb449df5e0c5bd61a68, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
