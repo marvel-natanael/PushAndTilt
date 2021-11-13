@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
+
 public class MainMenu : MonoBehaviour
 {
     private static bool isShown = false;
@@ -13,20 +14,22 @@ public class MainMenu : MonoBehaviour
         creditsObj.gameObject.SetActive(false);
         settingsObj.gameObject.SetActive(false);
     }
+
     public void showSettings()
     {
         isShown = !isShown;
         settingsObj.gameObject.SetActive(isShown);
         creditsObj.gameObject.SetActive(false);
     }
+
     public void setSFX()
     {
-
     }
+
     public void setMusic()
     {
-
     }
+
     public void showCredits()
     {
         isShown = !isShown;
