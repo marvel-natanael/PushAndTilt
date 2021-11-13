@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
+
 public class MainMenu : MonoBehaviour
 {
     private static bool isShown = false;
@@ -18,12 +19,14 @@ public class MainMenu : MonoBehaviour
         creditsObj.gameObject.SetActive(false);
         settingsObj.gameObject.SetActive(false);
     }
+
     public void showSettings()
     {
         isShown = !isShown;
         settingsObj.gameObject.SetActive(isShown);
         creditsObj.gameObject.SetActive(false);
     }
+
     public void setSFX()
     {
         isSfxOn = !isSfxOn;
@@ -42,7 +45,9 @@ public class MainMenu : MonoBehaviour
                     break;
                 }
         }
+
     }
+
     public void showCredits()
     {
         isShown = !isShown;
