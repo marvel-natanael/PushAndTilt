@@ -1,12 +1,12 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
-
+using UnityEngine.UI;
 public class MainMenu : MonoBehaviour
 {
-    private bool isShown = false;
-    public GameObject creditsObj;
-    public GameObject settingsObj;
+    private static bool isShown = false;
+    public Button creditsObj;
+    public Button settingsObj;
 
     private void Start()
     {
@@ -15,7 +15,9 @@ public class MainMenu : MonoBehaviour
     }
     public void showSettings()
     {
-
+        isShown = !isShown;
+        settingsObj.gameObject.SetActive(isShown);
+        creditsObj.gameObject.SetActive(false);
     }
     public void setSFX()
     {
@@ -28,6 +30,7 @@ public class MainMenu : MonoBehaviour
     public void showCredits()
     {
         isShown = !isShown;
-        creditsObj.SetActive(isShown);
+        creditsObj.gameObject.SetActive(isShown);
+        settingsObj.gameObject.SetActive(false);
     }
 }
