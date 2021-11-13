@@ -675,7 +675,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 83981648}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1418240482}
+        m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
+        m_MethodName: setMusic
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &83981648
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -2343,8 +2355,16 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 632e55f6ca8d4ca45a749b5606ebb28d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  musicButton: {fileID: 83981647}
+  sfxButton: {fileID: 2029221013}
+  musicOn: {fileID: 21300000, guid: 999657d2f2ec55f47ba6c69275c5d0b8, type: 3}
+  musicOff: {fileID: 21300000, guid: 5fb5ed19e8cb34a4ebab5b2713b932f7, type: 3}
+  sfxOn: {fileID: 21300000, guid: 2dd8412fb54b5d74facca973da1675d3, type: 3}
+  sfxOff: {fileID: 21300000, guid: 1654d37530ce16341b26bfd635a9f7d2, type: 3}
   creditsObj: {fileID: 1599686997}
   settingsObj: {fileID: 583491748}
+  sfxMixer: {fileID: 24100000, guid: 3d6a41b13e798bc4699749548796dd0a, type: 2}
+  musicMixer: {fileID: 24100000, guid: 3d6a41b13e798bc4699749548796dd0a, type: 2}
 --- !u!4 &1418240483
 Transform:
   m_ObjectHideFlags: 0
@@ -3059,7 +3079,19 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2029221014}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls: []
+      m_Calls:
+      - m_Target: {fileID: 1418240482}
+        m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
+        m_MethodName: setSFX
+        m_Mode: 1
+        m_Arguments:
+          m_ObjectArgument: {fileID: 0}
+          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
+          m_IntArgument: 0
+          m_FloatArgument: 0
+          m_StringArgument: 
+          m_BoolArgument: 0
+        m_CallState: 2
 --- !u!114 &2029221014
 MonoBehaviour:
   m_ObjectHideFlags: 0
