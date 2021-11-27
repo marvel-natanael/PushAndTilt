@@ -22,6 +22,7 @@ public class KillTrigger : MonoBehaviour
         {
             killPlayer(collision.transform);
             StartCoroutine(shake.shakeCam(0.15f, 0.4f));
+            AnimManager.Instance.showDeathAnim();
         }
     }
 }
