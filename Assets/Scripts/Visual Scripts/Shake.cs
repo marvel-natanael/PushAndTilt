@@ -4,7 +4,7 @@ using UnityEngine;
 
 public class Shake : MonoBehaviour
 {
-    public IEnumerator shakeCam(float duration, float magnitude)
+    public IEnumerator ShakeCam(float duration, float magnitude)
     {
         Vector3 orignalPosition = transform.position;
         float elapsed = 0f;
