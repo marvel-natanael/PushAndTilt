@@ -237,7 +237,14 @@ public class NetworkObstacle : NetworkBehaviour
     {
         if (!manager)
         {
-            manager = GameObject.FindGameObjectWithTag("Manager").GetComponent<GameManager>();
+            try
+            {
+                manager = GameObject.FindGameObjectWithTag("Manager").GetComponent<GameManager>();
+            }
+            catch
+            {
+                Debug.LogError("Manager for Obstacle not found");
+            }
         }
         if (!sweeper)
         {

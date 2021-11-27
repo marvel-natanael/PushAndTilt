@@ -2,10 +2,12 @@ using TMPro;
 using Mirror;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 public class ServerBrowserScript : MonoBehaviour
 {
     [SerializeField] private GameObject buttonTemplate;
+    private Dictionary<string, GameObject> registered;
 
     public ServerBrowserButtonScript CurrentSelected;
 
@@ -23,7 +25,9 @@ public class ServerBrowserScript : MonoBehaviour
 
     private void Awake()
     {
+        registered = new Dictionary<string, GameObject>();
         ClearBrowserList();
+        FindObjectOfType<MyNetworkDiscovery>().StartDiscovery();
     }
 
     public void StartClient()
@@ -41,35 +45,42 @@ public class ServerBrowserScript : MonoBehaviour
         }
         else
         {
-            manager.SetHostName("", GameObject.FindGameObjectWithTag("hostNameField").GetComponent<TMP_InputField>().text);
             if (!NetworkServer.active && !NetworkClient.isConnected)
             {
-                var netManager = GameObject.FindGameObjectWithTag("networkManager");
-                netManager.GetComponent<MyNetworkDiscovery>().StopDiscovery();
-                netManager.GetComponent<MyNetworkManager>().StartHost();
+                var netManager = GameObject.FindGameObjectWithTag("networkManager").GetComponent<MyNetworkManager>();
+                netManager.gameObject.GetComponent<MyNetworkDiscovery>().StopDiscovery();
+                netManager.HostName = GameObject.FindGameObjectWithTag("hostNameField").GetComponent<TMP_InputField>().text;
+                netManager.StartHost();
             }
         }
     }
 
     public void SetData(DiscoveryResponse response, string address)
     {
-        var content = GetComponent<ScrollRect>().content.transform;
-        var button = Instantiate(buttonTemplate, content);
-        button.GetComponent<ServerBrowserButtonScript>().SetButtonInfo(response.HostName, address, response.ConnectedCount);
+        if (!registered.ContainsKey(address))
+        {
+            var content = GetComponent<ScrollRect>().content.transform;
+            var button = Instantiate(buttonTemplate, content);
+            button.GetComponent<ServerBrowserButtonScript>().SetButtonInfo(response.HostName, address, response.ConnectedCount);
+            registered.Add(address, button.gameObject);
+        }
+        else
+        {
+            GameObject button;
+            registered.TryGetValue(address, out button);
+            button.GetComponent<ServerBrowserButtonScript>().UpdatePlayerCount(response.ConnectedCount);
+        }
     }
 
     private void ClearBrowserList()
     {
         var content = GetComponent<ScrollRect>().content.transform;
-        while (content.childCount != 0)
+        if (content.childCount != 0)
         {
-            Destroy(content.GetChild(0).gameObject);
+            for (int i = content.childCount; i > 0; i--)
+            {
+                Destroy(content.GetChild(i - 1).gameObject);
+            }
         }
-    }
-
-    public void RefreshBrowserList()
-    {
-        ClearBrowserList();
-        FindObjectOfType<MyNetworkDiscovery>().StartDiscovery();
     }
 }

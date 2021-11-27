@@ -10,7 +10,7 @@ public class Parallax : MonoBehaviour
 
     private void Awake()
     {
-        parallaxObj = GetComponent<MeshRenderer>();
+        parallaxObj = FindObjectOfType<MeshRenderer>();
     }
 
     private void Update()

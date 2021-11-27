@@ -1,4 +1,5 @@
 using System.Net;
+using System.Collections.Generic;
 using Mirror;
 using Mirror.Discovery;
 using UnityEngine;
@@ -65,8 +66,10 @@ public class MyNetworkDiscovery : NetworkDiscoveryBase<DiscoveryRequest, Discove
     /// <returns>A message containing information about this server</returns>
     protected override DiscoveryResponse ProcessRequest(DiscoveryRequest request, IPEndPoint endpoint)
     {
+        var netManager = FindObjectOfType<MyNetworkManager>();
         var manager = FindObjectOfType<GameManager>();
-        return new DiscoveryResponse(manager.HostName, manager.PlayersConnected);
+        Debug.Log("MyNetworkDiscovery: netManager.HostName = \"" + netManager.HostName + "\", manager.PlayersConnected = " + manager.PlayersConnected);
+        return new DiscoveryResponse(netManager.HostName, manager.PlayersConnected);
     }
 
     #endregion Server

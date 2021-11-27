@@ -30,10 +30,6 @@ public class ServerBrowserButtonScript : MonoBehaviour
         }
     }
 
-    private void Update()
-    {
-    }
-
     /// <summary>
     /// Sets button instance's texts to display in Server Browser
     /// </summary>
@@ -53,5 +49,10 @@ public class ServerBrowserButtonScript : MonoBehaviour
     public void Selected()
     {
         FindObjectOfType<ServerBrowserScript>().CurrentSelected = this;
+    }
+
+    public void UpdatePlayerCount(short count)
+    {
+        s_playerCount = count;
     }
 }

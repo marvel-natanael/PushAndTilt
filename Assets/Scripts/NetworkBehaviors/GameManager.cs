@@ -3,10 +3,9 @@ using UnityEngine;
 
 public class GameManager : NetworkBehaviour
 {
-    [SerializeField, SyncVar(hook = nameof(SetHostName))] private string hostName;
     [SerializeField, SyncVar(hook = nameof(SetPlayerConnected))] private short playersConnected;
     [SerializeField, SyncVar(hook = nameof(SetRunState))] private bool running;
-    [SerializeField, SyncVar(hook = nameof(SetPlayerCount))] private short playerCount;
+    [SerializeField, SyncVar(hook = nameof(SetPlayerCount))] private short playerAlive;
 
     [Header("GUI settings")]
     private string runStatus;
@@ -25,25 +24,13 @@ public class GameManager : NetworkBehaviour
 
     #region Properties
 
-    public string HostName => hostName;
-    public short PlayerCount { get => playerCount; }
+    public short PlayerCount { get => playerAlive; }
     public bool Running { get => running; }
     public short PlayersConnected => playersConnected;
 
     #endregion Properties
 
     #region Server_Functions
-
-    /// <summary>
-    /// Hook function for <c>hostData</c>.
-    /// </summary>
-    /// <param name="old">Old value</param>
-    /// <param name="_new">New value</param>
-    [Server]
-    public void SetHostName(string old, string _new)
-    {
-        hostName = _new;
-    }
 
     /// <summary>
     /// Hook function for <c>running</c>.
@@ -64,7 +51,7 @@ public class GameManager : NetworkBehaviour
     [Server]
     public void SetPlayerCount(short old, short _new)
     {
-        playerCount = _new;
+        playerAlive = _new;
     }
 
     /// <summary>

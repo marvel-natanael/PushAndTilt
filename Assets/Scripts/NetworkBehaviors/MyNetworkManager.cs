@@ -1,19 +1,19 @@
 ﻿using Mirror;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class MyNetworkManager : NetworkManager
 {
     [SerializeField] private GameManager manager;
-    private string hostName;
+    [SerializeField] private string hostName;
 
-    public override void Start()
-    {
-        base.Start();
-    }
+    public string HostName { get => hostName; set => hostName = value; }
 
     public override void OnStartHost()
     {
         base.OnStartHost();
+        var manager = FindObjectOfType<GameManager>();
+        manager.SetPlayerCount(manager.PlayerCount, (short)manager.PlayerCount + 1);
         GetComponent<MyNetworkDiscovery>().AdvertiseServer();
     }
 
