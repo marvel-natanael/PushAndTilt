@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Audio;
 using UnityEngine.UI;
+using DG.Tweening;
 
 public class MainMenu : MonoBehaviour
 {
@@ -14,12 +15,26 @@ public class MainMenu : MonoBehaviour
     public GameObject settingsObj;
     public AudioMixer sfxMixer, musicMixer;
 
+    public RectTransform mainMenu, serverMenu;
+
     private void Start()
     {
+        mainMenu.DOAnchorPos(Vector2.zero, 0.25f);
         creditsObj.gameObject.SetActive(false);
         settingsObj.gameObject.SetActive(false);
     }
-
+    //Transition
+    public void swipeRight()
+    {
+        mainMenu.DOAnchorPos(new Vector2(-2000, 0), 0.25f);
+        serverMenu.DOAnchorPos(new Vector2(0, 0), 0.25f);
+    }
+    public void swipeLeft()
+    {
+        mainMenu.DOAnchorPos(new Vector2(0, 0), 0.25f);
+        serverMenu.DOAnchorPos(new Vector2(2000, 0), 0.25f);
+    }
+    //Settings
     public void showSettings()
     {
         isShown = !isShown;
