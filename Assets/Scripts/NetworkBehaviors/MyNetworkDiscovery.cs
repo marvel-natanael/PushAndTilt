@@ -17,27 +17,24 @@ public class DiscoveryRequest : NetworkMessage
 
 public class DiscoveryResponse : NetworkMessage
 {
-    private string hostName;
-    private short connectedCount;
-
-    public string HostName => hostName;
-    public short ConnectedCount => connectedCount;
-
-    public DiscoveryResponse()
-    {
-        hostName = "default";
-        connectedCount = 0;
-    }
-
-    public DiscoveryResponse(string hName, short plrCount)
-    {
-        hostName = hName;
-        connectedCount = plrCount;
-    }
+    public string hostName;
+    public int connectedCount;
 }
 
 public class MyNetworkDiscovery : NetworkDiscoveryBase<DiscoveryRequest, DiscoveryResponse>
 {
+    private ServerBrowserScript serverBrowser;
+    private MyNetworkManager netManager;
+    private GameManager manager;
+
+    public override void Start()
+    {
+        base.Start();
+        serverBrowser = GameObject.FindGameObjectWithTag("serverBrowser").GetComponent<ServerBrowserScript>();
+        netManager = FindObjectOfType<MyNetworkManager>();
+        manager = FindObjectOfType<GameManager>();
+    }
+
     #region Server
 
     /// <summary>
@@ -66,10 +63,11 @@ public class MyNetworkDiscovery : NetworkDiscoveryBase<DiscoveryRequest, Discove
     /// <returns>A message containing information about this server</returns>
     protected override DiscoveryResponse ProcessRequest(DiscoveryRequest request, IPEndPoint endpoint)
     {
-        var netManager = FindObjectOfType<MyNetworkManager>();
-        var manager = FindObjectOfType<GameManager>();
-        Debug.Log("MyNetworkDiscovery: netManager.HostName = \"" + netManager.HostName + "\", manager.PlayersConnected = " + manager.PlayersConnected);
-        return new DiscoveryResponse(netManager.HostName, manager.PlayersConnected);
+        Debug.Log("MyNetworkDiscovery: netManager.HostName = \"" + netManager.HostName + "\", manager.PlayersConnected = " + NetworkServer.connections.Count);
+        var item = new DiscoveryResponse();
+        item.hostName = netManager.HostName;
+        item.connectedCount = NetworkServer.connections.Count;
+        return item;
     }
 
     #endregion Server
@@ -99,8 +97,7 @@ public class MyNetworkDiscovery : NetworkDiscoveryBase<DiscoveryRequest, Discove
     /// <param name="endpoint">Address of the server that replied</param>
     protected override void ProcessResponse(DiscoveryResponse response, IPEndPoint endpoint)
     {
-        var serverBrowser = GameObject.FindGameObjectWithTag("serverBrowser").GetComponent<ServerBrowserScript>();
-        serverBrowser.SetData(response, endpoint.ToString());
+        serverBrowser.SetData(response, endpoint.Address.ToString());
     }
 
     #endregion Client

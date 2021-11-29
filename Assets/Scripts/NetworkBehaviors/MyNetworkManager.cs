@@ -13,29 +13,47 @@ public class MyNetworkManager : NetworkManager
     {
         base.OnStartHost();
         var manager = FindObjectOfType<GameManager>();
-        manager.SetPlayerCount(manager.PlayerCount, (short)manager.PlayerCount + 1);
+
         GetComponent<MyNetworkDiscovery>().AdvertiseServer();
     }
 
     public override void OnServerConnect(NetworkConnection conn)
     {
         base.OnServerConnect(conn);
-        if (!manager)
+        if (NetworkServer.connections.Count > 5)
         {
-            GameObject.FindGameObjectWithTag("Manager").GetComponent<GameManager>();
+            conn.Disconnect();
         }
         else
         {
-            if (manager.PlayersConnected == 5)
-            {
-                conn.Disconnect();
-            }
+            Debug.Log("A player has joined");
+            manager.SetPlayerConnected(0, NetworkServer.connections.Count);
         }
+    }
+
+    public override void OnServerDisconnect(NetworkConnection conn)
+    {
+        base.OnServerDisconnect(conn);
+        manager.SetPlayerConnected(0, NetworkServer.connections.Count);
     }
 
     public override void OnClientConnect(NetworkConnection conn)
     {
         base.OnClientConnect(conn);
+        Debug.Log("You're connected!");
         //todo: Send player name
+    }
+
+    public override void Awake()
+    {
+        base.Awake();
+        if (!manager)
+        {
+            manager = FindObjectOfType<GameManager>();
+            if (!manager)
+            {
+                Debug.LogError("MyNetworkManager: Manager not found");
+            }
+        }
     }
 }

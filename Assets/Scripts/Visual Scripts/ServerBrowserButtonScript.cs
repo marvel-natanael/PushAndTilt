@@ -8,11 +8,11 @@ public class ServerBrowserButtonScript : MonoBehaviour
     private TextMeshProUGUI hostName;
     private TextMeshProUGUI address;
     private TextMeshProUGUI playerCount;
-    private short s_playerCount;
+    private int s_playerCount;
 
     public string HostName => hostName.text;
     public string Address => address.text;
-    public short PlayerCount => s_playerCount;
+    public int PlayerCount => s_playerCount;
 
     public void Awake()
     {
@@ -37,7 +37,7 @@ public class ServerBrowserButtonScript : MonoBehaviour
     /// <param name="_address">Server socket info (ip:port)</param>
     /// <param name="_playerCount">Server current playerCount</param>
     /// <returns><c>true</c>, if successful</returns>
-    public bool SetButtonInfo(string _hostName, string _address, short _playerCount)
+    public bool SetButtonInfo(string _hostName, string _address, int _playerCount)
     {
         hostName.text = _hostName;
         address.text = _address;
@@ -51,7 +51,7 @@ public class ServerBrowserButtonScript : MonoBehaviour
         FindObjectOfType<ServerBrowserScript>().CurrentSelected = this;
     }
 
-    public void UpdatePlayerCount(short count)
+    public void UpdatePlayerCount(int count)
     {
         s_playerCount = count;
     }

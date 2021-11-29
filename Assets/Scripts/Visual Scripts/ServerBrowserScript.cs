@@ -61,14 +61,14 @@ public class ServerBrowserScript : MonoBehaviour
         {
             var content = GetComponent<ScrollRect>().content.transform;
             var button = Instantiate(buttonTemplate, content);
-            button.GetComponent<ServerBrowserButtonScript>().SetButtonInfo(response.HostName, address, response.ConnectedCount);
+            button.GetComponent<ServerBrowserButtonScript>().SetButtonInfo(response.hostName, address, response.connectedCount);
             registered.Add(address, button.gameObject);
         }
         else
         {
             GameObject button;
             registered.TryGetValue(address, out button);
-            button.GetComponent<ServerBrowserButtonScript>().UpdatePlayerCount(response.ConnectedCount);
+            button.GetComponent<ServerBrowserButtonScript>().UpdatePlayerCount(response.connectedCount);
         }
     }
 

@@ -252,7 +252,7 @@ GameObject:
   - component: {fileID: -2658852460408899445}
   - component: {fileID: 3249294072130804457}
   - component: {fileID: -7906306492539444307}
-  - component: {fileID: -6401854458383908529}
+  - component: {fileID: 5861901861619782551}
   - component: {fileID: 7995360056632543897}
   - component: {fileID: -5795353179386663173}
   m_Layer: 0
@@ -371,7 +371,7 @@ MonoBehaviour:
   visible: 0
   m_AssetId: fd79e61ddd604c3419efd2323ce95cb9
   hasSpawned: 0
---- !u!114 &-6401854458383908529
+--- !u!114 &5861901861619782551
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -380,19 +380,26 @@ MonoBehaviour:
   m_GameObject: {fileID: 4727917183509554448}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: ab2cbc52526ea384ba280d13cd1a57b9, type: 3}
+  m_Script: {fileID: 11500000, guid: 2f74aedd71d9a4f55b3ce499326d45fb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  target: {fileID: -5795353179386663173}
   clientAuthority: 1
-  syncVelocity: 1
-  clearVelocity: 0
-  velocitySensitivity: 0.1
-  syncAngularVelocity: 1
-  clearAngularVelocity: 0
-  angularVelocitySensitivity: 0.1
+  sendInterval: 0.01
+  syncPosition: 1
+  syncRotation: 1
+  syncScale: 0
+  interpolatePosition: 1
+  interpolateRotation: 1
+  interpolateScale: 0
+  bufferTimeMultiplier: 1
+  bufferSizeLimit: 64
+  catchupThreshold: 4
+  catchupMultiplier: 0.1
+  showGizmos: 0
+  showOverlay: 0
+  overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
 --- !u!61 &7995360056632543897
 BoxCollider2D:
   m_ObjectHideFlags: 0
