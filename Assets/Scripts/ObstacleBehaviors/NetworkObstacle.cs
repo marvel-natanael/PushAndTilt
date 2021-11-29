@@ -8,7 +8,7 @@ public class NetworkObstacle : NetworkBehaviour
     [SerializeField] private GameScreen screen;
 
     [SerializeField] private GameManager manager;
-    [SerializeField] private GameObject sweeper;
+    private GameObject sweeper;
 
     [Header("Generator Settings")]
     [SerializeField] private short reduceHoleBy;
@@ -231,6 +231,25 @@ public class NetworkObstacle : NetworkBehaviour
             Destroy(val);
         }
         base.OnStopClient();
+    }
+
+    private void Awake()
+    {
+        if (!manager)
+        {
+            try
+            {
+                manager = GameObject.FindGameObjectWithTag("Manager").GetComponent<GameManager>();
+            }
+            catch
+            {
+                Debug.LogError("Manager for Obstacle not found");
+            }
+        }
+        if (!sweeper)
+        {
+            sweeper = GameObject.FindGameObjectWithTag("networkManager").GetComponent<MyNetworkManager>().spawnPrefabs[1];
+        }
     }
 
     private void Start()
