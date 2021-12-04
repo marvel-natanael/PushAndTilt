@@ -1548,6 +1548,7 @@ GameObject:
   - component: {fileID: 6066992751463952645}
   - component: {fileID: 6243037956720984640}
   - component: {fileID: 1664280063055103705}
+  - component: {fileID: 8547019116497782506}
   m_Layer: 5
   m_Name: NetworkOptionsClientName
   m_TagString: Untagged
@@ -1614,6 +1615,25 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!95 &8547019116497782506
+Animator:
+  serializedVersion: 3
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 4563997741985576770}
+  m_Enabled: 1
+  m_Avatar: {fileID: 0}
+  m_Controller: {fileID: 9100000, guid: c9b067f3876c0564eb0064aa88fd7cd5, type: 2}
+  m_CullingMode: 0
+  m_UpdateMode: 0
+  m_ApplyRootMotion: 0
+  m_LinearVelocityBlending: 0
+  m_WarningMessage: 
+  m_HasTransformHierarchy: 1
+  m_AllowConstantClipSamplingOptimization: 1
+  m_KeepAnimatorControllerStateOnDisable: 0
 --- !u!1 &4628934850100936911
 GameObject:
   m_ObjectHideFlags: 0
@@ -2126,7 +2146,7 @@ GameObject:
   - component: {fileID: 8478070635227415654}
   m_Layer: 5
   m_Name: NetworkOptionsClientName_inputField
-  m_TagString: Untagged
+  m_TagString: clientNameField
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0

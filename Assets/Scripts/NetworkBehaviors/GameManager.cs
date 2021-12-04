@@ -1,5 +1,6 @@
 ﻿using Mirror;
 using UnityEngine;
+using System.Collections.Generic;
 
 public class GameManager : NetworkBehaviour
 {
@@ -38,7 +39,7 @@ public class GameManager : NetworkBehaviour
     /// <param name="old">Old value</param>
     /// <param name="_new">New value</param>
     [Server]
-    public void SetRunState(bool old, bool _new)
+    public void SetRunState(bool _old, bool _new)
     {
         running = _new;
     }
@@ -49,7 +50,7 @@ public class GameManager : NetworkBehaviour
     /// <param name="old">Old value</param>
     /// <param name="_new">New value</param>
     [Server]
-    public void SetPlayerCount(int old, int _new)
+    public void SetPlayerCount(int _old, int _new)
     {
         playerAlive = _new;
     }
@@ -60,17 +61,23 @@ public class GameManager : NetworkBehaviour
     /// <param name="old">Old value</param>
     /// <param name="_new">New value</param>
     [Server]
-    public void SetPlayerConnected(int old, int _new)
+    public void SetPlayerConnected(int _old, int _new)
     {
         playersConnected = _new;
     }
 
     [Server]
-    private short CountPlayerNumber()
+    private void CountPlayerNumber()
     {
-        short playerCount = 5;
-        //todo: Implement proper player counter
-        return playerCount;
+        var count = 0;
+        foreach (var conn in NetworkServer.connections)
+        {
+            if (conn.Value.identity.GetComponent<NetPlayerScript>().isAlive)
+            {
+                count++;
+            }
+        }
+        SetPlayerCount(playerAlive, count);
     }
 
     #endregion Server_Functions

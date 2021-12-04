@@ -14,7 +14,7 @@ public class ServerBrowserButtonScript : MonoBehaviour
     public string Address => address.text;
     public int PlayerCount => s_playerCount;
 
-    public void Awake()
+    private void Awake()
     {
         if (!hostName)
         {
@@ -46,13 +46,22 @@ public class ServerBrowserButtonScript : MonoBehaviour
         return true;
     }
 
+    /// <summary>
+    /// Set this button instance to be the one selected in <c>ServerBrowserScript</c>
+    /// </summary>
+    /// <remarks>Used as a button function, do not call!</remarks>
     public void Selected()
     {
         FindObjectOfType<ServerBrowserScript>().CurrentSelected = this;
     }
 
+    /// <summary>
+    /// Updates the <c>playerCount</c> field once an update is recieved in the server browser
+    /// </summary>
+    /// <param name="count">New number to be displayed</param>
     public void UpdatePlayerCount(int count)
     {
         s_playerCount = count;
+        playerCount.text = s_playerCount.ToString();
     }
 }

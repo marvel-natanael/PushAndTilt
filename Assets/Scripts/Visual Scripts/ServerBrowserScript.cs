@@ -32,8 +32,27 @@ public class ServerBrowserScript : MonoBehaviour
 
     public void StartClient()
     {
-        FindObjectOfType<MyNetworkManager>().networkAddress = CurrentSelected.Address;
-        FindObjectOfType<MyNetworkManager>().StartClient();
+        var clientField = GameObject.FindGameObjectWithTag("clientNameField").GetComponent<TMP_InputField>();
+        if (clientField.text.Length > 1)
+        {
+            if (CurrentSelected)
+            {
+                var netManager = FindObjectOfType<MyNetworkManager>();
+                netManager.networkAddress = CurrentSelected.Address;
+                netManager.PlayerName = clientField.text;
+
+                FindObjectOfType<MyNetworkManager>().StartClient();
+            }
+            else
+            {
+                Debug.Log("ServerBrowserScript.cs/StartClient(): nothing is currently selected!");
+            }
+        }
+        else
+        {
+            Debug.Log("ServerBrowserScript.cs/StartClient(): client name is not set!");
+            clientField.transform.parent.gameObject.GetComponent<Animator>().Play("Flash");
+        }
     }
 
     public void StartHost()
@@ -41,7 +60,7 @@ public class ServerBrowserScript : MonoBehaviour
         var manager = GameObject.FindGameObjectWithTag("Manager").GetComponent<GameManager>();
         if (!manager)
         {
-            Debug.LogError("Manager not found");
+            Debug.LogError("ServerBrowserScript.cs/StartHost(): manager not found!");
         }
         else
         {
@@ -66,8 +85,7 @@ public class ServerBrowserScript : MonoBehaviour
         }
         else
         {
-            GameObject button;
-            registered.TryGetValue(address, out button);
+            registered.TryGetValue(address, out GameObject button);
             button.GetComponent<ServerBrowserButtonScript>().UpdatePlayerCount(response.connectedCount);
         }
     }

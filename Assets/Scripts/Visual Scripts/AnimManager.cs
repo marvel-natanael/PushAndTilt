@@ -2,7 +2,6 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-
 public class AnimManager : MonoBehaviour
 {
     public static AnimManager Instance { get; private set; }
@@ -10,6 +9,7 @@ public class AnimManager : MonoBehaviour
     public GameObject loseObj;
     public GameObject winObj;
     public GameObject text;
+
     private void Awake()
     {
         if (Instance != null && Instance != this)
@@ -29,12 +29,13 @@ public class AnimManager : MonoBehaviour
         loseObj.gameObject.SetActive(false);
     }
 
-    public void showDeathAnim()
+    public void ShowDeathAnim()
     {
         loseObj.gameObject.SetActive(true);
         text.SetActive(true);
     }
-    public void showWinAnim()
+
+    public void ShowWinAnim()
     {
         winObj.gameObject.SetActive(true);
         text.SetActive(true);
