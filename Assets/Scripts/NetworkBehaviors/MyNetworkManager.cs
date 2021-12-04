@@ -25,16 +25,8 @@ public class MyNetworkManager : NetworkManager
     public override void OnServerConnect(NetworkConnection conn)
     {
         base.OnServerConnect(conn);
-        if (NetworkServer.connections.Count > 5)
-        {
-            Debug.Log("MyNetworkManager.cs/OnServerConnect(): a player has been kicked (full server)");
-            conn.Disconnect();
-        }
-        else
-        {
-            Debug.Log("MyNetworkManager.cs/OnServerConnect(): A player has joined");
-            manager.SetPlayerConnected(0, NetworkServer.connections.Count);
-        }
+        Debug.Log("MyNetworkManager.cs/OnServerConnect(): A player has joined");
+        manager.SetPlayerConnected(0, NetworkServer.connections.Count);
     }
 
     public override void OnServerDisconnect(NetworkConnection conn)
@@ -46,6 +38,7 @@ public class MyNetworkManager : NetworkManager
     public override void OnClientConnect(NetworkConnection conn)
     {
         base.OnClientConnect(conn);
+        manager.SetPlayerConnected(manager.PlayerCount, manager.PlayerCount);
         Debug.Log("You're connected!");
     }
 

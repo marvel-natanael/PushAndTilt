@@ -4,12 +4,13 @@ using System.Collections.Generic;
 
 public class NetPlayerScript : NetworkBehaviour
 {
+    private MyNetworkManager netManager;
     private GameScreen screen;
     private TextMesh nameLabel;
-    private SpriteRenderer readySprite;
     private Rigidbody2D rb;
     private float charRadius;
-    [SerializeField] private List<Sprite> readySprites;
+    [SerializeField] private TextMesh readyLabel;
+    [SerializeField] private TextMesh playerNameLabel;
 
     #region Jumping Fields
 
@@ -54,16 +55,17 @@ public class NetPlayerScript : NetworkBehaviour
     #region Network Managed Fields
 
     [Header("Network Managed Fields")]
-    [SerializeField, SyncVar(hook = nameof(SetPlayerAliveStatus))] private bool isActive;
-
-    [SerializeField, SyncVar(hook = nameof(SetReadyState))] private bool isReady;
     [SerializeField, SyncVar(hook = nameof(SetPlayerName))] private string playerName;
+
+    [SerializeField, SyncVar(hook = nameof(SetReadyState))] private bool ready;
+    [SerializeField, SyncVar(hook = nameof(SetPlayerAliveStatus))] private bool active;
 
     #endregion Network Managed Fields
 
     #region Properties
 
-    public bool isAlive => isActive;
+    public bool isAlive => active;
+    public bool isReady => ready;
 
     #endregion Properties
 
@@ -73,6 +75,10 @@ public class NetPlayerScript : NetworkBehaviour
 
     private void Awake()
     {
+        if (!(netManager = FindObjectOfType<MyNetworkManager>()))
+        {
+            Debug.LogError("NetPlayerScript.cs/Awake(): netManager is missing!");
+        }
         if (!(screen = GameObject.FindGameObjectWithTag("screen").GetComponent<GameScreen>()))
         {
             Debug.LogError("NetPlayerScript.cs/Awake(): screen is missing!");
@@ -81,36 +87,37 @@ public class NetPlayerScript : NetworkBehaviour
         {
             Debug.LogError("NetPlayerScript.cs/Awake(): jumpHeightIndicator is missing!");
         }
-        charRadius = GetComponent<SpriteRenderer>().bounds.size.x / 2;
         if (!(rb = GetComponent<Rigidbody2D>()))
         {
             Debug.LogError("NetPlayerScript.cs/Awake(): rb is missing!");
         }
-        if (!(nameLabel = transform.GetComponentInChildren<TextMesh>()))
-        {
-            Debug.LogError("NetPlayerScript.cs/Awake(): nameLabel is missing!");
-        }
-        if (!(readySprite = transform.GetComponentInChildren<SpriteRenderer>()))
+        if (!(readyLabel = transform.GetChild(0).GetComponent<TextMesh>()))
         {
             Debug.LogError("NetPlayerScript.cs/Awake(): readySprite is missing!");
+        }
+        if (!(nameLabel = transform.GetChild(1).GetComponent<TextMesh>()))
+        {
+            Debug.LogError("NetPlayerScript.cs/Awake(): nameLabel is missing!");
         }
     }
 
     private void Start()
     {
-        chargeLimit = CalculateMaxVelocity();
-        isCharging = false;
-        SetPlayerAliveStatus(false, false);
-        SetReadyState(false, false);
         if (isLocalPlayer)
         {
-            SetPlayerName(string.Empty, FindObjectOfType<MyNetworkManager>().PlayerName);
+            chargeLimit = CalculateMaxVelocity();
+            isCharging = false;
+            SetPlayerAliveStatus(false, false);
+            SetReadyVisibility(false);
+            SetPlayerName(string.Empty, netManager.PlayerName);
+            SetReadyState(false, false);
+            charRadius = GetComponent<SpriteRenderer>().bounds.size.x / 2;
         }
     }
 
     private void FixedUpdate()
     {
-        if (isActive)
+        if (active)
         {
             TouchHandler();
             HandleMovements();
@@ -203,24 +210,38 @@ public class NetPlayerScript : NetworkBehaviour
     }
 
     /// <summary>
-    /// [Button Function] Toggles player's ready state
+    /// Toggles player's ready state
     /// </summary>
-    public void ToggleReady()
+    public void SetReadyLabel(bool state)
     {
         if (isLocalPlayer)
         {
-            SetReadyState(isReady, !isReady);
-            if (isReady)
+            if (state)
             {
-                readySprite.sprite = readySprites[1];
+                readyLabel.text = "Ready";
+                readyLabel.color = new Color(100f, 255f, 100f, 255f);
             }
-            else readySprite.sprite = readySprites[0];
+            else
+            {
+                readyLabel.text = "";
+            }
         }
     }
 
     private void SetReadyVisibility(bool state)
     {
-        readySprite.enabled = state;
+        if (isLocalPlayer)
+        {
+            if (state)
+            {
+                readyLabel.text = "Not Ready";
+                readyLabel.color = new Color(255f, 100f, 100f, 1f);
+            }
+            else
+            {
+                readyLabel.text = "";
+            }
+        }
     }
 
     [ClientRpc]
@@ -240,7 +261,15 @@ public class NetPlayerScript : NetworkBehaviour
     /// <param name="_new">new state</param>
     public void SetPlayerAliveStatus(bool _old, bool _new)
     {
-        isActive = _new;
+        active = _new;
+        Debug.Log("Hook fired: SetPlayerAliveStatus() on NetPlayerScript.cs with new value of " + _new);
+    }
+
+    public void SetPlayerName(string _old, string _new)
+    {
+        playerName = _new;
+        playerNameLabel.text = _new;
+        Debug.Log("Hook fired: SetPlayerName() on NetPlayerScript.cs with new value of " + _new);
     }
 
     /// <summary>
@@ -251,14 +280,10 @@ public class NetPlayerScript : NetworkBehaviour
     /// </remarks>
     /// <param name="_old">[unused]</param>
     /// <param name="_new">new state</param>
-    private void SetReadyState(bool _old, bool _new)
+    public void SetReadyState(bool _old, bool _new)
     {
-        isReady = _new;
-    }
-
-    private void SetPlayerName(string _old, string _new)
-    {
-        playerName = _new;
+        ready = _new;
+        Debug.Log("Hook fired: SetReadyState() on NetPlayerScript.cs with new value of " + _new);
     }
 
     #endregion HookFunction

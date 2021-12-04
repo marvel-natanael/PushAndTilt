@@ -39,6 +39,7 @@ public class ServerBrowserScript : MonoBehaviour
             {
                 var netManager = FindObjectOfType<MyNetworkManager>();
                 netManager.networkAddress = CurrentSelected.Address;
+                netManager.HostName = CurrentSelected.HostName;
                 netManager.PlayerName = clientField.text;
 
                 FindObjectOfType<MyNetworkManager>().StartClient();
@@ -57,20 +58,29 @@ public class ServerBrowserScript : MonoBehaviour
 
     public void StartHost()
     {
-        var manager = GameObject.FindGameObjectWithTag("Manager").GetComponent<GameManager>();
-        if (!manager)
-        {
-            Debug.LogError("ServerBrowserScript.cs/StartHost(): manager not found!");
-        }
-        else
+        var clientField = GameObject.FindGameObjectWithTag("clientNameField").GetComponent<TMP_InputField>();
+        if (clientField.text.Length > 1)
         {
             if (!NetworkServer.active && !NetworkClient.isConnected)
             {
                 var netManager = GameObject.FindGameObjectWithTag("networkManager").GetComponent<MyNetworkManager>();
-                netManager.gameObject.GetComponent<MyNetworkDiscovery>().StopDiscovery();
-                netManager.HostName = GameObject.FindGameObjectWithTag("hostNameField").GetComponent<TMP_InputField>().text;
-                netManager.StartHost();
+                if (netManager)
+                {
+                    netManager.gameObject.GetComponent<MyNetworkDiscovery>().StopDiscovery();
+                    netManager.HostName = GameObject.FindGameObjectWithTag("hostNameField").GetComponent<TMP_InputField>().text;
+                    netManager.PlayerName = clientField.text;
+                    netManager.StartHost();
+                }
+                else
+                {
+                    Debug.LogError("ServerBrowserScript.cs/StartHost(): network manager is not found!");
+                }
             }
+        }
+        else
+        {
+            Debug.Log("ServerBrowserScript.cs/StartHost(): client name is not set!");
+            clientField.transform.parent.gameObject.GetComponent<Animator>().Play("Flash");
         }
     }
 

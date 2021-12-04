@@ -66,20 +66,6 @@ public class GameManager : NetworkBehaviour
         playersConnected = _new;
     }
 
-    [Server]
-    private void CountPlayerNumber()
-    {
-        var count = 0;
-        foreach (var conn in NetworkServer.connections)
-        {
-            if (conn.Value.identity.GetComponent<NetPlayerScript>().isAlive)
-            {
-                count++;
-            }
-        }
-        SetPlayerCount(playerAlive, count);
-    }
-
     #endregion Server_Functions
 
     public void Running_Switch()
