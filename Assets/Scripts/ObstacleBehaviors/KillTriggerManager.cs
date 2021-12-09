@@ -22,7 +22,6 @@ public class KillTriggerManager : NetworkBehaviour
         Instantiate(deathEffect, player.transform);
         if (player.isLocalPlayer)
         {
-            player.SetPlayerAliveStatus(false, false);
             StartCoroutine(shake.ShakeCam(0.15f, 0.4f));
         }
     }

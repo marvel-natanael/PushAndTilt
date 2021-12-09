@@ -34,16 +34,13 @@ public class LobbyManager : NetworkBehaviour
     public void ToggleReady()
     {
         var localPlayerScript = NetworkClient.localPlayer.gameObject.GetComponent<NetPlayerScript>();
-        localPlayerScript.SetReadyState(localPlayerScript.isReady, !localPlayerScript.isReady);
         if (localPlayerScript.isReady)
         {
             SetReadyCount(readyCount, readyCount + 1);
-            localPlayerScript.SetReadyLabel(true);
         }
         else
         {
             SetReadyCount(readyCount, readyCount - 1);
-            localPlayerScript.SetReadyLabel(false);
         }
     }
 }

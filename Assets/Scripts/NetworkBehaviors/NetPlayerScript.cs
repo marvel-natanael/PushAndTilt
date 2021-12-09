@@ -55,10 +55,10 @@ public class NetPlayerScript : NetworkBehaviour
     #region Network Managed Fields
 
     [Header("Network Managed Fields")]
-    [SerializeField, SyncVar(hook = nameof(SetPlayerName))] private string playerName;
+    [SerializeField] private string playerName;
 
-    [SerializeField, SyncVar(hook = nameof(SetReadyState))] private bool ready;
-    [SerializeField, SyncVar(hook = nameof(SetPlayerAliveStatus))] private bool active;
+    [SerializeField] private bool ready;
+    [SerializeField] private bool active;
 
     #endregion Network Managed Fields
 
@@ -66,6 +66,8 @@ public class NetPlayerScript : NetworkBehaviour
 
     public bool isAlive => active;
     public bool isReady => ready;
+
+    public string PlayerName => playerName;
 
     #endregion Properties
 
@@ -107,10 +109,6 @@ public class NetPlayerScript : NetworkBehaviour
         {
             chargeLimit = CalculateMaxVelocity();
             isCharging = false;
-            SetPlayerAliveStatus(false, false);
-            SetReadyVisibility(false);
-            SetPlayerName(string.Empty, netManager.PlayerName);
-            SetReadyState(false, false);
             charRadius = GetComponent<SpriteRenderer>().bounds.size.x / 2;
         }
     }
@@ -216,10 +214,10 @@ public class NetPlayerScript : NetworkBehaviour
     {
         if (isLocalPlayer)
         {
+            readyLabel.color = new Color(100f, 255f, 100f);
             if (state)
             {
                 readyLabel.text = "Ready";
-                readyLabel.color = new Color(100f, 255f, 100f, 255f);
             }
             else
             {
@@ -228,65 +226,18 @@ public class NetPlayerScript : NetworkBehaviour
         }
     }
 
-    private void SetReadyVisibility(bool state)
+    public void SetPlayerName(string newName)
     {
-        if (isLocalPlayer)
-        {
-            if (state)
-            {
-                readyLabel.text = "Not Ready";
-                readyLabel.color = new Color(255f, 100f, 100f, 1f);
-            }
-            else
-            {
-                readyLabel.text = "";
-            }
-        }
+        playerName = newName;
+        playerNameLabel.text = playerName;
+        Debug.Log($"NetPlayerScript.cs/SetPlayerName(): Name has been set to {playerName}");
     }
 
     [ClientRpc]
     public void Arise()
     {
-        SetPlayerAliveStatus(false, true);
-        SetReadyVisibility(false);
+        SetReadyLabel(false);
     }
-
-    #region HookFunction
-
-    /// <summary>
-    /// Hook funtion to set a player's active state
-    /// </summary>
-    /// <remarks>This function is called to set the player's ability to move.</remarks>
-    /// <param name="_old">[unused]</param>
-    /// <param name="_new">new state</param>
-    public void SetPlayerAliveStatus(bool _old, bool _new)
-    {
-        active = _new;
-        Debug.Log("Hook fired: SetPlayerAliveStatus() on NetPlayerScript.cs with new value of " + _new);
-    }
-
-    public void SetPlayerName(string _old, string _new)
-    {
-        playerName = _new;
-        playerNameLabel.text = _new;
-        Debug.Log("Hook fired: SetPlayerName() on NetPlayerScript.cs with new value of " + _new);
-    }
-
-    /// <summary>
-    /// Hook function to set player's ready state
-    /// </summary>
-    /// <remarks>
-    /// This function is used when a player is connected, but the game hasn't started yet.
-    /// </remarks>
-    /// <param name="_old">[unused]</param>
-    /// <param name="_new">new state</param>
-    public void SetReadyState(bool _old, bool _new)
-    {
-        ready = _new;
-        Debug.Log("Hook fired: SetReadyState() on NetPlayerScript.cs with new value of " + _new);
-    }
-
-    #endregion HookFunction
 
     private void OnValidate()
     {
