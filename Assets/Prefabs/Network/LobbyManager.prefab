@@ -1,6 +1,6 @@
 %YAML 1.1
 %TAG !u! tag:unity3d.com,2011:
---- !u!1 &7053468098306442277
+--- !u!1 &3485610060459881697
 GameObject:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -8,23 +8,23 @@ GameObject:
   m_PrefabAsset: {fileID: 0}
   serializedVersion: 6
   m_Component:
-  - component: {fileID: 7053468098306442278}
-  - component: {fileID: 7053468098306442280}
-  - component: {fileID: 7053468098306442279}
+  - component: {fileID: 3485610060459881710}
+  - component: {fileID: 3485610060459881711}
+  - component: {fileID: 3485610060459881696}
   m_Layer: 0
-  m_Name: GameManager
-  m_TagString: Manager
+  m_Name: LobbyManager
+  m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!4 &7053468098306442278
+--- !u!4 &3485610060459881710
 Transform:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7053468098306442277}
+  m_GameObject: {fileID: 3485610060459881697}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
@@ -32,13 +32,13 @@ Transform:
   m_Father: {fileID: 0}
   m_RootOrder: 0
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &7053468098306442280
+--- !u!114 &3485610060459881711
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7053468098306442277}
+  m_GameObject: {fileID: 3485610060459881697}
   m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 9b91ecbcc199f4492b9a91e820070131, type: 3}
@@ -47,26 +47,23 @@ MonoBehaviour:
   sceneId: 0
   serverOnly: 0
   visible: 0
-  m_AssetId: e5564671d4e0d464ea40c14d092d8bb9
+  m_AssetId: 33b537072b581ef42b1c53ddfc6f1a03
   hasSpawned: 0
---- !u!114 &7053468098306442279
+--- !u!114 &3485610060459881696
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 7053468098306442277}
+  m_GameObject: {fileID: 3485610060459881697}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f89b8df8c4c32d7439c98b655e7e49e1, type: 3}
+  m_Script: {fileID: 11500000, guid: 76e819678495f1440892878c9d5f64e9, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  playersConnected: 0
-  running: 0
-  playerAlive: 0
-  newPlayerName: 
-  showGUI: 0
-  guiOffset: {x: 0, y: 75}
-  players: []
+  lobbyUIPrefab: {fileID: 6879115648520905627, guid: 29a27035759816c49a4a90eeff6becd7,
+    type: 3}
+  lobbyUI: {fileID: 0}
+  readyCount: 0

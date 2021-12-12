@@ -4,11 +4,14 @@ using UnityEngine;
 
 public class NetworkObstacle : NetworkBehaviour
 {
-    [Header("Bindings")]
-    [SerializeField] private GameScreen screen;
+    #region Fields
 
-    [SerializeField] private GameManager manager;
+    private GameScreen screen;
+    private MyNetworkManager netManager;
+    private GameManager manager;
+    private GameObject ground;
     private GameObject sweeper;
+    private GameObject killTrigger;
 
     [Header("Generator Settings")]
     [SerializeField] private short reduceHoleBy;
@@ -24,8 +27,6 @@ public class NetworkObstacle : NetworkBehaviour
     [Header("Synchronized Variables")]
     [SerializeField] private Direction direction;
 
-    [SyncVar(hook = nameof(SetDirection))] private int dirNum;
-
 #if UNITY_EDITOR
 
     [Header("GUI Options")]
@@ -34,6 +35,8 @@ public class NetworkObstacle : NetworkBehaviour
     [SerializeField] private Vector2 guiOffset;
 #endif
     private readonly SyncList<float> holes = new SyncList<float>();
+
+    #endregion Fields
 
     /// <summary>
     /// Direction enum used mostly for indicating the direction of the sweepers.
@@ -68,20 +71,17 @@ public class NetworkObstacle : NetworkBehaviour
             if (num < 0.25f)
             {
                 direction = Direction.Right;
-                SetDirection(dirNum, 2);
             }
             //Chance 25% left
             else if (num < 0.5f)
             {
                 direction = Direction.Left;
-                SetDirection(dirNum, 1);
             }
             //Chance 50% up
             else
             {
                 num2 = screen.ScreenWidth_inWorldUnits / holeCount;
                 direction = Direction.Up;
-                SetDirection(dirNum, 0);
             }
             //Generate a list of holes position
             {
@@ -116,7 +116,7 @@ public class NetworkObstacle : NetworkBehaviour
     {
         if (!sweeper)
         {
-            sweeper = GameObject.FindGameObjectWithTag("networkManager").GetComponent<MyNetworkManager>().spawnPrefabs[1];
+            Debug.LogError("NetworkObstacle.cs/CreateObstacle(): Failed, sweeper object is null");
         }
         var size = sweeper.GetComponent<SpriteRenderer>().bounds.size;
         Vector2 vel = Vector2.zero;
@@ -210,46 +210,42 @@ public class NetworkObstacle : NetworkBehaviour
     /// <summary>
     /// Creates a platform for the players. All connected client, including <c>localPlayer</c> should ran this function once.
     /// </summary>
-    public void CreatePlatform()
+    public void SetupGameWorld()
     {
-        var instance = Instantiate(GameObject.FindGameObjectWithTag("networkManager").GetComponent<MyNetworkManager>().spawnPrefabs[0]);
-        instance.transform.position = new Vector3(0f, screen.Corner_BottomLeft.y - 0.5f, 0f);
-        instance.transform.localScale = new Vector3(2f, 3f, 1f);
+        //Spawn Ground
+        {
+            var instance = Instantiate(ground);
+        }
+        //Spawn kill triggers
+        {
+            var instance = Instantiate(killTrigger);
+        }
     }
 
     public override void OnStartClient()
     {
-        CreatePlatform();
         base.OnStartClient();
+        SetupGameWorld();
     }
 
     public override void OnStopClient()
     {
+        base.OnStopClient();
         var temp = GameObject.FindGameObjectsWithTag("Ground");
         foreach (GameObject val in temp)
         {
             Destroy(val);
         }
-        base.OnStopClient();
     }
 
     private void Awake()
     {
-        if (!manager)
-        {
-            try
-            {
-                manager = GameObject.FindGameObjectWithTag("Manager").GetComponent<GameManager>();
-            }
-            catch
-            {
-                Debug.LogError("Manager for Obstacle not found");
-            }
-        }
-        if (!sweeper)
-        {
-            sweeper = GameObject.FindGameObjectWithTag("networkManager").GetComponent<MyNetworkManager>().spawnPrefabs[1];
-        }
+        screen = FindObjectOfType<GameScreen>();
+        manager = FindObjectOfType<GameManager>();
+        netManager = FindObjectOfType<MyNetworkManager>();
+        ground = netManager.spawnPrefabs[0];
+        sweeper = netManager.spawnPrefabs[1];
+        killTrigger = netManager.spawnPrefabs[2];
     }
 
     private void Start()
@@ -304,30 +300,6 @@ public class NetworkObstacle : NetworkBehaviour
             {
                 Gizmos.DrawSphere(new Vector3(item, 0), 0.1f);
             }
-        }
-    }
-
-    /// <summary>
-    /// Hook function for <c>dirNum</c>.
-    /// </summary>
-    /// <param name="old">Old value</param>
-    /// <param name="_new">New value</param>
-    private void SetDirection(int old, int _new)
-    {
-        dirNum = _new;
-        switch (dirNum)
-        {
-            case 0:
-                direction = Direction.Up;
-                break;
-
-            case 1:
-                direction = Direction.Left;
-                break;
-
-            case 2:
-                direction = Direction.Right;
-                break;
         }
     }
 }

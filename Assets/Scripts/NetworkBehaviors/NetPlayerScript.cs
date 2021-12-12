@@ -1,9 +1,19 @@
 ﻿using Mirror;
 using UnityEngine;
+using System.Collections.Generic;
 
-public class NetPlayerMovement : NetworkBehaviour
+public class NetPlayerScript : NetworkBehaviour
 {
+    private GameManager manager;
+    private MyNetworkManager netManager;
     private GameScreen screen;
+    private TextMesh nameLabel;
+    private Rigidbody2D rb;
+    private float charRadius;
+    [SerializeField] private TextMesh readyLabel;
+    [SerializeField] private TextMesh playerNameLabel;
+
+    #region Jumping Fields
 
     [Header("Player jump charge parameters")]
     [SerializeField]
@@ -24,6 +34,10 @@ public class NetPlayerMovement : NetworkBehaviour
     [SerializeField]
     private bool isCharging;
 
+    #endregion Jumping Fields
+
+    #region Movement Fields
+
     [Header("Player speed parameters")]
     [SerializeField]
     private float speed;
@@ -37,9 +51,26 @@ public class NetPlayerMovement : NetworkBehaviour
     [SerializeField, Range(0.01f, 1f)]
     private float restitution;
 
-    private float charRadius;
+    #endregion Movement Fields
 
-    private Rigidbody2D rb;
+    #region Network Managed Fields
+
+    [Header("Network Managed Fields")]
+    [SerializeField, SyncVar(hook = nameof(SetPlayerName))] private string playerName;
+
+    [SerializeField] private bool ready;
+    [SerializeField] private bool active;
+
+    #endregion Network Managed Fields
+
+    #region Properties
+
+    public bool isAlive => active;
+    public bool isReady => ready;
+    public string PlayerName => playerName;
+
+    #endregion Properties
+
 #if !UNITY_EDITOR
     private float dirX, dirY;
 #endif
@@ -50,44 +81,7 @@ public class NetPlayerMovement : NetworkBehaviour
     /// <returns>float value containing the max jump speed</returns>
     private float CalculateMaxVelocity()
     {
-        init();
-        return rb.gravityScale * ((screen.Corner_TopRight.y - screen.Corner_BottomLeft.y) / 2);
-    }
-
-    private void Start()
-    {
-        jumpHeightIndicator = transform.GetChild(0).gameObject;
-        charRadius = GetComponent<SpriteRenderer>().bounds.size.x / 2;
-        rb = GetComponent<Rigidbody2D>();
-        chargeLimit = CalculateMaxVelocity();
-        isCharging = false;
-    }
-
-    /// <summary>
-    /// Initialization to avoid empty objects
-    /// </summary>
-    private void init()
-    {
-        if (!screen)
-        {
-            screen = GameObject.FindGameObjectWithTag("screen").GetComponent<GameScreen>();
-        }
-    }
-
-    private void CalculateChargeVisualization()
-    {
-        init();
-        if (rb.gravityScale != 0)
-        {
-            chargeHeight = (charge * charge) / (2 * rb.gravityScale);
-        }
-        jumpHeightIndicator.transform.localScale = new Vector3(0.5f, chargeHeight, 1.0f);
-    }
-
-    private void FixedUpdate()
-    {
-        TouchHandler();
-        HandleMovements();
+        return Mathf.Sqrt(2 * (Mathf.Abs(Physics2D.gravity.y) * rb.gravityScale) * (screen.Corner_TopRight.y - transform.position.y));
     }
 
     /// <summary>
@@ -95,7 +89,6 @@ public class NetPlayerMovement : NetworkBehaviour
     /// </summary>
     private void HandleMovements()
     {
-        init();
         if (isLocalPlayer)
         {
             //Horizontal Movements
@@ -165,6 +158,99 @@ public class NetPlayerMovement : NetworkBehaviour
     private void TouchHandler()
     {
         isCharging = Input.GetMouseButton(0);
+    }
+
+    /// <summary>
+    /// Toggles player's ready state
+    /// </summary>
+    public void SetReadyLabel(bool state)
+    {
+        if (isLocalPlayer)
+        {
+            readyLabel.color = new Color(100f, 255f, 100f);
+            if (state)
+            {
+                readyLabel.text = "Ready";
+            }
+            else
+            {
+                readyLabel.text = "";
+            }
+        }
+    }
+
+    [Server]
+    public void ServerSetPlayerName(string name)
+    {
+        playerName = name;
+    }
+
+    public override void OnStartServer()
+    {
+        base.OnStartServer();
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+    }
+
+    private void SetPlayerName(string old, string _new)
+    {
+        playerName = _new;
+        playerNameLabel.text = playerName;
+        Debug.Log($"NetPlayerScript.cs/SetPlayerName(Client): {name}'s name has been set to {playerName}");
+    }
+
+    private void Awake()
+    {
+        if (!(netManager = FindObjectOfType<MyNetworkManager>()))
+        {
+            Debug.LogError("NetPlayerScript.cs/Awake(): netManager is missing!");
+        }
+        if (!(screen = GameObject.FindGameObjectWithTag("screen").GetComponent<GameScreen>()))
+        {
+            Debug.LogError("NetPlayerScript.cs/Awake(): screen is missing!");
+        }
+        if (!(jumpHeightIndicator = transform.GetChild(0).gameObject))
+        {
+            Debug.LogError("NetPlayerScript.cs/Awake(): jumpHeightIndicator is missing!");
+        }
+        if (!(rb = GetComponent<Rigidbody2D>()))
+        {
+            Debug.LogError("NetPlayerScript.cs/Awake(): rb is missing!");
+        }
+        if (!(readyLabel = transform.GetChild(0).GetComponent<TextMesh>()))
+        {
+            Debug.LogError("NetPlayerScript.cs/Awake(): readySprite is missing!");
+        }
+        if (!(nameLabel = transform.GetChild(1).GetComponent<TextMesh>()))
+        {
+            Debug.LogError("NetPlayerScript.cs/Awake(): nameLabel is missing!");
+        }
+        if (!(manager = FindObjectOfType<GameManager>()))
+        {
+            Debug.LogError("NetPlayerScript.cs/Awake(): manager is missing!");
+        }
+    }
+
+    private void Start()
+    {
+        if (isLocalPlayer)
+        {
+            chargeLimit = CalculateMaxVelocity();
+            isCharging = false;
+            charRadius = GetComponent<SpriteRenderer>().bounds.size.x / 2;
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if (active)
+        {
+            TouchHandler();
+            HandleMovements();
+        }
     }
 
     private void OnValidate()

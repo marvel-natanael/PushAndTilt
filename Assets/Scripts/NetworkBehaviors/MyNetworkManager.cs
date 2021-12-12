@@ -6,54 +6,56 @@ public class MyNetworkManager : NetworkManager
 {
     [SerializeField] private GameManager manager;
     [SerializeField] private string hostName;
+    [SerializeField] private string localPlayerName;
 
+    /// <summary>
+    /// Get and set server hostName
+    /// </summary>
     public string HostName { get => hostName; set => hostName = value; }
+
+    public string LocalPlayerName { get => localPlayerName; set => localPlayerName = value; }
 
     public override void OnStartHost()
     {
         base.OnStartHost();
-        var manager = FindObjectOfType<GameManager>();
-
         GetComponent<MyNetworkDiscovery>().AdvertiseServer();
     }
 
     public override void OnServerConnect(NetworkConnection conn)
     {
         base.OnServerConnect(conn);
-        if (NetworkServer.connections.Count > 5)
+        Debug.Log($"{ToString()}: A player has joined");
+        if (!(manager = FindObjectOfType<GameManager>()))
         {
-            conn.Disconnect();
+            Debug.LogError($"{ToString()}: manager not found");
         }
-        else
-        {
-            Debug.Log("A player has joined");
-            manager.SetPlayerConnected(0, NetworkServer.connections.Count);
-        }
-    }
-
-    public override void OnServerDisconnect(NetworkConnection conn)
-    {
-        base.OnServerDisconnect(conn);
-        manager.SetPlayerConnected(0, NetworkServer.connections.Count);
+        manager.ServerSetPlayerCount(NetworkServer.connections.Count);
     }
 
     public override void OnClientConnect(NetworkConnection conn)
     {
         base.OnClientConnect(conn);
         Debug.Log("You're connected!");
-        //todo: Send player name
     }
 
-    public override void Awake()
+    public override void OnServerDisconnect(NetworkConnection conn)
     {
-        base.Awake();
-        if (!manager)
-        {
-            manager = FindObjectOfType<GameManager>();
-            if (!manager)
-            {
-                Debug.LogError("MyNetworkManager: Manager not found");
-            }
-        }
+        base.OnServerDisconnect(conn);
+        Debug.Log($"{ToString()}: A player has disconnected");
+        manager.ServerSetPlayerCount(NetworkServer.connections.Count);
+    }
+
+    public override void OnServerAddPlayer(NetworkConnection conn)
+    {
+        Transform startPos = GetStartPosition();
+        GameObject player = startPos != null
+            ? Instantiate(playerPrefab, startPos.position, startPos.rotation)
+            : Instantiate(playerPrefab);
+
+        // instantiating a "Player" prefab gives it the name "Player(clone)"
+        // => appending the connectionId is WAY more useful for debugging!
+        player.name = $"{playerPrefab.name} [connId={conn.connectionId}]";
+        player.GetComponent<NetPlayerScript>().ServerSetPlayerName(manager.NewPlayerName);
+        NetworkServer.AddPlayerForConnection(conn, player);
     }
 }
