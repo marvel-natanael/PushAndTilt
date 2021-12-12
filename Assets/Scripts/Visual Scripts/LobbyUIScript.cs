@@ -16,13 +16,13 @@ public class LobbyUIScript : MonoBehaviour
 
     private void Awake()
     {
-        if (!gameManager)
-        {
-            gameManager = FindObjectOfType<GameManager>();
-        }
         if (!netManager)
         {
             netManager = FindObjectOfType<MyNetworkManager>();
+        }
+        if (!gameManager)
+        {
+            gameManager = FindObjectOfType<GameManager>();
         }
         if (!manager)
         {
@@ -54,6 +54,5 @@ public class LobbyUIScript : MonoBehaviour
         {
             toggleReadyButton.interactable = true;
         }
-        Debug.Log("connection count: " + gameManager.PlayersConnected);
     }
 }

@@ -40,7 +40,7 @@ public class ServerBrowserScript : MonoBehaviour
                 var netManager = FindObjectOfType<MyNetworkManager>();
                 netManager.networkAddress = CurrentSelected.Address;
                 netManager.HostName = CurrentSelected.HostName;
-                netManager.PlayerName = clientField.text;
+                netManager.LocalPlayerName = clientField.text;
 
                 FindObjectOfType<MyNetworkManager>().StartClient();
             }
@@ -68,7 +68,7 @@ public class ServerBrowserScript : MonoBehaviour
                 {
                     netManager.gameObject.GetComponent<MyNetworkDiscovery>().StopDiscovery();
                     netManager.HostName = GameObject.FindGameObjectWithTag("hostNameField").GetComponent<TMP_InputField>().text;
-                    netManager.PlayerName = clientField.text;
+                    netManager.LocalPlayerName = clientField.text;
                     netManager.StartHost();
                 }
                 else

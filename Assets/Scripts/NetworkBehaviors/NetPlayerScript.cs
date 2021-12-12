@@ -4,6 +4,7 @@ using System.Collections.Generic;
 
 public class NetPlayerScript : NetworkBehaviour
 {
+    private GameManager manager;
     private MyNetworkManager netManager;
     private GameScreen screen;
     private TextMesh nameLabel;
@@ -55,7 +56,7 @@ public class NetPlayerScript : NetworkBehaviour
     #region Network Managed Fields
 
     [Header("Network Managed Fields")]
-    [SerializeField] private string playerName;
+    [SerializeField, SyncVar(hook = nameof(SetPlayerName))] private string playerName;
 
     [SerializeField] private bool ready;
     [SerializeField] private bool active;
@@ -66,7 +67,6 @@ public class NetPlayerScript : NetworkBehaviour
 
     public bool isAlive => active;
     public bool isReady => ready;
-
     public string PlayerName => playerName;
 
     #endregion Properties
@@ -74,53 +74,6 @@ public class NetPlayerScript : NetworkBehaviour
 #if !UNITY_EDITOR
     private float dirX, dirY;
 #endif
-
-    private void Awake()
-    {
-        if (!(netManager = FindObjectOfType<MyNetworkManager>()))
-        {
-            Debug.LogError("NetPlayerScript.cs/Awake(): netManager is missing!");
-        }
-        if (!(screen = GameObject.FindGameObjectWithTag("screen").GetComponent<GameScreen>()))
-        {
-            Debug.LogError("NetPlayerScript.cs/Awake(): screen is missing!");
-        }
-        if (!(jumpHeightIndicator = transform.GetChild(0).gameObject))
-        {
-            Debug.LogError("NetPlayerScript.cs/Awake(): jumpHeightIndicator is missing!");
-        }
-        if (!(rb = GetComponent<Rigidbody2D>()))
-        {
-            Debug.LogError("NetPlayerScript.cs/Awake(): rb is missing!");
-        }
-        if (!(readyLabel = transform.GetChild(0).GetComponent<TextMesh>()))
-        {
-            Debug.LogError("NetPlayerScript.cs/Awake(): readySprite is missing!");
-        }
-        if (!(nameLabel = transform.GetChild(1).GetComponent<TextMesh>()))
-        {
-            Debug.LogError("NetPlayerScript.cs/Awake(): nameLabel is missing!");
-        }
-    }
-
-    private void Start()
-    {
-        if (isLocalPlayer)
-        {
-            chargeLimit = CalculateMaxVelocity();
-            isCharging = false;
-            charRadius = GetComponent<SpriteRenderer>().bounds.size.x / 2;
-        }
-    }
-
-    private void FixedUpdate()
-    {
-        if (active)
-        {
-            TouchHandler();
-            HandleMovements();
-        }
-    }
 
     /// <summary>
     /// Calculates the maximum height of player's jump.
@@ -226,17 +179,75 @@ public class NetPlayerScript : NetworkBehaviour
         }
     }
 
-    public void SetPlayerName(string newName)
+    public void SetPlayerName(string old, string _new)
     {
-        playerName = newName;
+        playerName = _new;
         playerNameLabel.text = playerName;
-        Debug.Log($"NetPlayerScript.cs/SetPlayerName(): Name has been set to {playerName}");
+        Debug.Log($"NetPlayerScript.cs/SetPlayerName(): {name}'s name has been set to {playerName}");
     }
 
-    [ClientRpc]
-    public void Arise()
+    public override void OnStartServer()
     {
-        SetReadyLabel(false);
+        base.OnStartServer();
+        SetPlayerName("", manager.NewPlayerName);
+    }
+
+    public override void OnStartClient()
+    {
+        base.OnStartClient();
+        manager.CmdSetNewPlayerName(netManager.LocalPlayerName);
+        SetPlayerName("", netManager.LocalPlayerName);
+    }
+
+    private void Awake()
+    {
+        if (!(netManager = FindObjectOfType<MyNetworkManager>()))
+        {
+            Debug.LogError("NetPlayerScript.cs/Awake(): netManager is missing!");
+        }
+        if (!(screen = GameObject.FindGameObjectWithTag("screen").GetComponent<GameScreen>()))
+        {
+            Debug.LogError("NetPlayerScript.cs/Awake(): screen is missing!");
+        }
+        if (!(jumpHeightIndicator = transform.GetChild(0).gameObject))
+        {
+            Debug.LogError("NetPlayerScript.cs/Awake(): jumpHeightIndicator is missing!");
+        }
+        if (!(rb = GetComponent<Rigidbody2D>()))
+        {
+            Debug.LogError("NetPlayerScript.cs/Awake(): rb is missing!");
+        }
+        if (!(readyLabel = transform.GetChild(0).GetComponent<TextMesh>()))
+        {
+            Debug.LogError("NetPlayerScript.cs/Awake(): readySprite is missing!");
+        }
+        if (!(nameLabel = transform.GetChild(1).GetComponent<TextMesh>()))
+        {
+            Debug.LogError("NetPlayerScript.cs/Awake(): nameLabel is missing!");
+        }
+        if (!(manager = FindObjectOfType<GameManager>()))
+        {
+            Debug.LogError("NetPlayerScript.cs/Awake(): manager is missing!");
+        }
+    }
+
+    private void Start()
+    {
+        if (isLocalPlayer)
+        {
+            chargeLimit = CalculateMaxVelocity();
+            isCharging = false;
+            charRadius = GetComponent<SpriteRenderer>().bounds.size.x / 2;
+        }
+    }
+
+    private void FixedUpdate()
+    {
+        if (active)
+        {
+            TouchHandler();
+            HandleMovements();
+        }
     }
 
     private void OnValidate()

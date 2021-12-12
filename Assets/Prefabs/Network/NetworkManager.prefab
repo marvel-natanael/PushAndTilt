@@ -64,9 +64,11 @@ MonoBehaviour:
   - {fileID: 2413265293222949679, guid: d5eff8359db3bdc45b7e02e9f560882a, type: 3}
   - {fileID: 3771305681486372477, guid: 7895acda6d3712f4591b8f6ced438455, type: 3}
   - {fileID: 8530771638233185060, guid: 021fddba3b37a4e41b6a090bf0f7991a, type: 3}
+  - {fileID: 7053468098306442277, guid: e5564671d4e0d464ea40c14d092d8bb9, type: 3}
+  - {fileID: 3485610060459881697, guid: 33b537072b581ef42b1c53ddfc6f1a03, type: 3}
   manager: {fileID: 0}
   hostName: 
-  playerName: 
+  localPlayerName: 
 --- !u!114 &7611857934969207970
 MonoBehaviour:
   m_ObjectHideFlags: 0

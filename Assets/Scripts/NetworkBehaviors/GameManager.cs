@@ -1,30 +1,25 @@
 ﻿using Mirror;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 
 public class GameManager : NetworkBehaviour
 {
+    #region Fields
+
     [SerializeField, SyncVar(hook = nameof(SetPlayerConnected))] private int playersConnected;
     [SerializeField, SyncVar(hook = nameof(SetRunState))] private bool running;
     [SerializeField, SyncVar(hook = nameof(SetPlayerCount))] private int playerAlive;
-
-    private readonly SyncDictionary<int, string> playerNames = new SyncDictionary<int, string>();
-    private readonly SyncDictionary<int, NetworkIdentity> playerObjs = new SyncDictionary<int, NetworkIdentity>();
+    [SerializeField, SyncVar(hook = nameof(SetNewPlayerName))] private string newPlayerName;
 
     [Header("GUI settings")]
     private string runStatus;
 
     [SerializeField] private bool showGUI;
     [SerializeField] private Vector2 guiOffset;
+    [SerializeField] private List<NetPlayerScript> players;
 
-    private void Awake()
-    {
-        if (GameObject.FindGameObjectsWithTag("Manager").Length > 1)
-        {
-            Destroy(gameObject);
-        }
-        DontDestroyOnLoad(gameObject);
-    }
+    #endregion Fields
 
     #region Properties
 
@@ -32,35 +27,9 @@ public class GameManager : NetworkBehaviour
     public bool Running { get => running; }
     public int PlayersConnected => playersConnected;
 
-    public SyncDictionary<int, string> PlayerNames => playerNames;
-
-    public SyncDictionary<int, NetworkIdentity> PlayerObjs => playerObjs;
+    public string NewPlayerName => newPlayerName;
 
     #endregion Properties
-
-    [Server]
-    public void AddPlayerObject(int id, NetworkIdentity playerObj)
-    {
-        PlayerObjs_Callback(SyncIDictionary<int, NetworkIdentity>.Operation.OP_ADD, id, playerObj);
-        Debug.Log("GameManager.cs/AddPlayerObject(): playerObj addded...");
-        RpcSetPlayerNames();
-    }
-
-    [Client]
-    public void RegisterClientName(int id, string name)
-    {
-        PlayerNames_Callback(SyncIDictionary<int, string>.Operation.OP_ADD, id, name);
-        Debug.Log("GameManager.cs/RegisterClientName(): Client name registered...");
-    }
-
-    [ClientRpc]
-    private void RpcSetPlayerNames()
-    {
-        foreach (var player in playerObjs)
-        {
-            player.Value.gameObject.GetComponent<NetPlayerScript>().SetPlayerName(playerNames[player.Key]);
-        }
-    }
 
     #region Server_Functions
 
@@ -99,52 +68,43 @@ public class GameManager : NetworkBehaviour
 
     #endregion Server_Functions
 
-    public override void OnStartClient()
+    #region Client_Functions
+
+    private void SetNewPlayerName(string old, string @new)
     {
-        base.OnStartClient();
-        playerNames.Callback += PlayerNames_Callback;
-        playerObjs.Callback += PlayerObjs_Callback;
+        newPlayerName = @new;
     }
 
-    private void PlayerObjs_Callback(SyncIDictionary<int, NetworkIdentity>.Operation op, int key, NetworkIdentity item)
+    #endregion Client_Functions
+
+    #region Commands
+
+    [Command(requiresAuthority = false)]
+    public void CmdSetNewPlayerName(string name)
     {
-        switch (op)
+        RpcSetNewPlayerName(name);
+        Debug.Log($"GameManager.cs/CmdSetNewPlayerName: Command ran");
+    }
+
+    #endregion Commands
+
+    #region ClientRPCs
+
+    [ClientRpc]
+    private void RpcSetNewPlayerName(string name)
+    {
+        Debug.Log($"GameManager.cs/RpcSetNewPlayerName: Rpc recieved, newPlayerName = {newPlayerName}");
+    }
+
+    #endregion ClientRPCs
+
+    private void Awake()
+    {
+        if (GameObject.FindGameObjectsWithTag("Manager").Length > 1)
         {
-            case SyncIDictionary<int, NetworkIdentity>.Operation.OP_ADD:
-                break;
-
-            case SyncIDictionary<int, NetworkIdentity>.Operation.OP_SET:
-                break;
-
-            case SyncIDictionary<int, NetworkIdentity>.Operation.OP_REMOVE:
-                break;
-
-            case SyncIDictionary<int, NetworkIdentity>.Operation.OP_CLEAR:
-                break;
+            Destroy(gameObject);
         }
-    }
-
-    private void PlayerNames_Callback(SyncIDictionary<int, string>.Operation op, int key, string item)
-    {
-        switch (op)
-        {
-            case SyncIDictionary<int, string>.Operation.OP_ADD:
-                break;
-
-            case SyncIDictionary<int, string>.Operation.OP_SET:
-                break;
-
-            case SyncIDictionary<int, string>.Operation.OP_REMOVE:
-                break;
-
-            case SyncIDictionary<int, string>.Operation.OP_CLEAR:
-                break;
-        }
-    }
-
-    public void Running_Switch()
-    {
-        SetRunState(running, !running);
+        DontDestroyOnLoad(gameObject);
     }
 
     private void OnGUI()
@@ -153,5 +113,10 @@ public class GameManager : NetworkBehaviour
         GUILayout.BeginArea(new Rect(10 + guiOffset.x, 40 + guiOffset.y, 215, 9999));
         if (GUILayout.Button(runStatus)) Running_Switch();
         GUILayout.EndArea();
+    }
+
+    public void Running_Switch()
+    {
+        SetRunState(running, !running);
     }
 }

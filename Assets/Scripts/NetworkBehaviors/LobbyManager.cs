@@ -6,12 +6,15 @@ using UnityEngine.UI;
 
 public class LobbyManager : NetworkBehaviour
 {
+    [SerializeField] private GameObject lobbyUIPrefab;
+    [SerializeField] private LobbyUIScript lobbyUI;
     [SerializeField, SyncVar(hook = nameof(SetReadyCount))] private int readyCount;
     private GameManager manager;
     private MyNetworkManager netManager;
 
     private void Awake()
     {
+        lobbyUI = Instantiate(lobbyUIPrefab).GetComponent<LobbyUIScript>();
         manager = FindObjectOfType<GameManager>();
         netManager = FindObjectOfType<MyNetworkManager>();
         SetReadyCount(0, 0);

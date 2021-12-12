@@ -6,19 +6,19 @@ public class MyNetworkManager : NetworkManager
 {
     [SerializeField] private GameManager manager;
     [SerializeField] private string hostName;
-    [SerializeField] private string playerName;
+    [SerializeField] private string localPlayerName;
 
     /// <summary>
     /// Get and set server hostName
     /// </summary>
     public string HostName { get => hostName; set => hostName = value; }
 
-    public string PlayerName { get => playerName; set => playerName = value; }
+    public string LocalPlayerName { get => localPlayerName; set => localPlayerName = value; }
 
     public override void OnStartHost()
     {
         base.OnStartHost();
-        var manager = FindObjectOfType<GameManager>();
+        manager = FindObjectOfType<GameManager>();
         GetComponent<MyNetworkDiscovery>().AdvertiseServer();
     }
 
@@ -27,6 +27,14 @@ public class MyNetworkManager : NetworkManager
         base.OnServerConnect(conn);
         Debug.Log("MyNetworkManager.cs/OnServerConnect(): A player has joined");
         manager.SetPlayerConnected(0, NetworkServer.connections.Count);
+    }
+
+    public override void OnClientConnect(NetworkConnection conn)
+    {
+        base.OnClientConnect(conn);
+        manager = FindObjectOfType<GameManager>();
+        manager.SetPlayerConnected(manager.PlayerCount, manager.PlayerCount);
+        Debug.Log("You're connected!");
     }
 
     public override void OnServerAddPlayer(NetworkConnection conn)
@@ -40,7 +48,13 @@ public class MyNetworkManager : NetworkManager
         // => appending the connectionId is WAY more useful for debugging!
         player.name = $"{playerPrefab.name} [connId={conn.connectionId}]";
         NetworkServer.AddPlayerForConnection(conn, player);
-        manager.AddPlayerObject(conn.connectionId, player.GetComponent<NetworkIdentity>());
+        manager.CmdSetNewPlayerName(localPlayerName);
+    }
+
+    public override void OnClientSceneChanged(NetworkConnection conn)
+    {
+        base.OnClientSceneChanged(conn);
+        Instantiate(spawnPrefabs[4]);
     }
 
     public override void OnServerDisconnect(NetworkConnection conn)
@@ -49,20 +63,12 @@ public class MyNetworkManager : NetworkManager
         manager.SetPlayerConnected(0, NetworkServer.connections.Count);
     }
 
-    public override void OnClientConnect(NetworkConnection conn)
-    {
-        base.OnClientConnect(conn);
-        manager.SetPlayerConnected(manager.PlayerCount, manager.PlayerCount);
-        manager.RegisterClientName(conn.connectionId, playerName);
-        Debug.Log("You're connected!");
-    }
-
     public override void Awake()
     {
         base.Awake();
         if (!(manager = FindObjectOfType<GameManager>()))
         {
-            Debug.LogError("MyNetworkManager.cs/Awake(): manager not found");
+            Debug.LogError($"MyNetworkManager.cs/Awake: manager not found");
         }
     }
 }

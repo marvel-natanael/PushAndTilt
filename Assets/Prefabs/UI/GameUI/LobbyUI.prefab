@@ -456,6 +456,8 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a57247663787e0b47927c9aac8025a6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  syncMode: 0
+  syncInterval: 0.1
   manager: {fileID: 0}
   hostNameLabel: {fileID: 1860217252393425011}
   statusLabel: {fileID: 6018791206862202220}
