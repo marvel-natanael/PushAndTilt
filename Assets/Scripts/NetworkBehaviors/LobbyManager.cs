@@ -6,18 +6,28 @@ using UnityEngine.UI;
 
 public class LobbyManager : NetworkBehaviour
 {
-    [SerializeField] private GameObject lobbyUIPrefab;
-    [SerializeField] private LobbyUIScript lobbyUI;
-    [SerializeField, SyncVar(hook = nameof(SetReadyCount))] private int readyCount;
     private GameManager manager;
     private MyNetworkManager netManager;
+    [SerializeField] private LobbyUIScript lobbyUI;
+    [SerializeField, SyncVar(hook = nameof(SetReadyCount))] private int readyCount;
 
-    private void Awake()
+    public override void OnStartClient()
     {
-        lobbyUI = Instantiate(lobbyUIPrefab).GetComponent<LobbyUIScript>();
-        manager = FindObjectOfType<GameManager>();
-        netManager = FindObjectOfType<MyNetworkManager>();
+        if (!(manager = FindObjectOfType<GameManager>()))
+        {
+            Debug.LogError($"{ToString()}: manager not found");
+        }
+        if (!(netManager = FindObjectOfType<MyNetworkManager>()))
+        {
+            Debug.LogError($"{ToString()}: netManager not found");
+        }
+        base.OnStartClient();
+    }
+
+    public override void OnStartServer()
+    {
         SetReadyCount(0, 0);
+        base.OnStartServer();
     }
 
     /// <summary>
@@ -31,19 +41,24 @@ public class LobbyManager : NetworkBehaviour
     private void SetReadyCount(int _old, int _new)
     {
         readyCount = _new;
-        Debug.Log("Hook fired: SetReadyCount() on LobbyManager.cs with new value of " + _new);
+        Debug.Log($"{ToString()}: readycount is now {_new}");
     }
 
-    public void ToggleReady()
+    [Server]
+    private void ServerSetReadyCount(bool state)
     {
-        var localPlayerScript = NetworkClient.localPlayer.gameObject.GetComponent<NetPlayerScript>();
-        if (localPlayerScript.isReady)
-        {
-            SetReadyCount(readyCount, readyCount + 1);
-        }
-        else
-        {
-            SetReadyCount(readyCount, readyCount - 1);
-        }
+        if (state) SetReadyCount(readyCount, readyCount + 1);
+        else SetReadyCount(readyCount, readyCount - 1);
+    }
+
+    [Command]
+    public void CmdSetPlayerReadyState(bool state)
+    {
+        RpcSetPlayerReadyState(state);
+    }
+
+    [TargetRpc]
+    private void RpcSetPlayerReadyState(bool state)
+    {
     }
 }

@@ -7,6 +7,7 @@ public class GameManager : NetworkBehaviour
 {
     #region Fields
 
+    [SerializeField] private MyNetworkManager netManager;
     [SerializeField, SyncVar(hook = nameof(SetPlayerConnected))] private int playersConnected;
     [SerializeField, SyncVar(hook = nameof(SetRunState))] private bool running;
     [SerializeField, SyncVar(hook = nameof(SetPlayerCount))] private int playerAlive;
@@ -33,13 +34,40 @@ public class GameManager : NetworkBehaviour
 
     #region Server_Functions
 
+    [Server]
+    private void ServerSetRunningState(bool state)
+    {
+        running = state;
+    }
+
+    [Server]
+    public void ServerSetPlayerCount(int count)
+    {
+        playersConnected = count;
+    }
+
+    [Server]
+    public void ServerSetAlivePlayerCount(int count)
+    {
+        playerAlive = count;
+    }
+
+    [Server]
+    public void ServerSetNewPlayerName(string name)
+    {
+        newPlayerName = name;
+    }
+
+    #endregion Server_Functions
+
+    #region Client_Functions
+
     /// <summary>
     /// Hook function for <c>running</c>.
     /// </summary>
     /// <param name="old">Old value</param>
     /// <param name="_new">New value</param>
-    [Server]
-    public void SetRunState(bool _old, bool _new)
+    private void SetRunState(bool _old, bool _new)
     {
         running = _new;
     }
@@ -49,8 +77,7 @@ public class GameManager : NetworkBehaviour
     /// </summary>
     /// <param name="old">Old value</param>
     /// <param name="_new">New value</param>
-    [Server]
-    public void SetPlayerCount(int _old, int _new)
+    private void SetPlayerCount(int _old, int _new)
     {
         playerAlive = _new;
     }
@@ -60,15 +87,10 @@ public class GameManager : NetworkBehaviour
     /// </summary>
     /// <param name="old">Old value</param>
     /// <param name="_new">New value</param>
-    [Server]
-    public void SetPlayerConnected(int _old, int _new)
+    private void SetPlayerConnected(int _old, int _new)
     {
         playersConnected = _new;
     }
-
-    #endregion Server_Functions
-
-    #region Client_Functions
 
     private void SetNewPlayerName(string old, string @new)
     {
@@ -80,31 +102,42 @@ public class GameManager : NetworkBehaviour
     #region Commands
 
     [Command(requiresAuthority = false)]
-    public void CmdSetNewPlayerName(string name)
+    public void CmdSetNewPlayerName(string name, NetworkConnectionToClient conn = null)
     {
-        RpcSetNewPlayerName(name);
-        Debug.Log($"GameManager.cs/CmdSetNewPlayerName: Command ran");
+        ServerSetNewPlayerName(name);
+        conn.identity.GetComponent<NetPlayerScript>().ServerSetPlayerName(name);
+        RpcSetNewPlayerName(conn, name);
+        Debug.Log($"{ToString()}: Command ran, sent name = {name}");
     }
 
     #endregion Commands
 
     #region ClientRPCs
 
-    [ClientRpc]
-    private void RpcSetNewPlayerName(string name)
+    [TargetRpc]
+    private void RpcSetNewPlayerName(NetworkConnection conn, string name)
     {
-        Debug.Log($"GameManager.cs/RpcSetNewPlayerName: Rpc recieved, newPlayerName = {newPlayerName}");
+        Debug.Log($"{ToString()}: Rpc recieved, newPlayerName = {newPlayerName}");
     }
 
     #endregion ClientRPCs
 
+    public override void OnStartClient()
+    {
+        CmdSetNewPlayerName(netManager.LocalPlayerName);
+        base.OnStartClient();
+    }
+
     private void Awake()
     {
+        if (!(netManager = FindObjectOfType<MyNetworkManager>()))
+        {
+            Debug.LogError($"{ToString()}: netManager not found");
+        }
         if (GameObject.FindGameObjectsWithTag("Manager").Length > 1)
         {
             Destroy(gameObject);
         }
-        DontDestroyOnLoad(gameObject);
     }
 
     private void OnGUI()

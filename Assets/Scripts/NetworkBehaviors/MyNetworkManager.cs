@@ -18,23 +18,31 @@ public class MyNetworkManager : NetworkManager
     public override void OnStartHost()
     {
         base.OnStartHost();
-        manager = FindObjectOfType<GameManager>();
         GetComponent<MyNetworkDiscovery>().AdvertiseServer();
     }
 
     public override void OnServerConnect(NetworkConnection conn)
     {
         base.OnServerConnect(conn);
-        Debug.Log("MyNetworkManager.cs/OnServerConnect(): A player has joined");
-        manager.SetPlayerConnected(0, NetworkServer.connections.Count);
+        Debug.Log($"{ToString()}: A player has joined");
+        if (!(manager = FindObjectOfType<GameManager>()))
+        {
+            Debug.LogError($"{ToString()}: manager not found");
+        }
+        manager.ServerSetPlayerCount(NetworkServer.connections.Count);
     }
 
     public override void OnClientConnect(NetworkConnection conn)
     {
         base.OnClientConnect(conn);
-        manager = FindObjectOfType<GameManager>();
-        manager.SetPlayerConnected(manager.PlayerCount, manager.PlayerCount);
         Debug.Log("You're connected!");
+    }
+
+    public override void OnServerDisconnect(NetworkConnection conn)
+    {
+        base.OnServerDisconnect(conn);
+        Debug.Log($"{ToString()}: A player has disconnected");
+        manager.ServerSetPlayerCount(NetworkServer.connections.Count);
     }
 
     public override void OnServerAddPlayer(NetworkConnection conn)
@@ -47,28 +55,7 @@ public class MyNetworkManager : NetworkManager
         // instantiating a "Player" prefab gives it the name "Player(clone)"
         // => appending the connectionId is WAY more useful for debugging!
         player.name = $"{playerPrefab.name} [connId={conn.connectionId}]";
+        player.GetComponent<NetPlayerScript>().ServerSetPlayerName(manager.NewPlayerName);
         NetworkServer.AddPlayerForConnection(conn, player);
-        manager.CmdSetNewPlayerName(localPlayerName);
-    }
-
-    public override void OnClientSceneChanged(NetworkConnection conn)
-    {
-        base.OnClientSceneChanged(conn);
-        Instantiate(spawnPrefabs[4]);
-    }
-
-    public override void OnServerDisconnect(NetworkConnection conn)
-    {
-        base.OnServerDisconnect(conn);
-        manager.SetPlayerConnected(0, NetworkServer.connections.Count);
-    }
-
-    public override void Awake()
-    {
-        base.Awake();
-        if (!(manager = FindObjectOfType<GameManager>()))
-        {
-            Debug.LogError($"MyNetworkManager.cs/Awake: manager not found");
-        }
     }
 }

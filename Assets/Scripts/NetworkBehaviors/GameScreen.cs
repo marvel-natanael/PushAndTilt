@@ -24,12 +24,14 @@ public class GameScreen : NetworkBehaviour
         //Top Right Corner
         {
             var temp = Camera.main.ScreenToWorldPoint(new Vector3(Screen.width, Screen.height, 0));
-            SetTopRight(corner_TopRight, new Vector2(temp.x, temp.y));
+            corner_BottomLeft = new Vector2(temp.x, temp.y);
+            //SetTopRight(corner_TopRight, new Vector2(temp.x, temp.y));
         }
         //Bottom Left Corner
         {
             var temp = Camera.main.ScreenToWorldPoint(new Vector3(0, 0, Camera.main.transform.position.z));
-            SetBottomLeft(corner_BottomLeft, new Vector2(temp.x, temp.y));
+            corner_TopRight = new Vector2(temp.x, temp.y);
+            //SetBottomLeft(corner_BottomLeft, new Vector2(temp.x, temp.y));
         }
     }
 

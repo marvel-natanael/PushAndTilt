@@ -179,24 +179,27 @@ public class NetPlayerScript : NetworkBehaviour
         }
     }
 
-    public void SetPlayerName(string old, string _new)
+    [Server]
+    public void ServerSetPlayerName(string name)
     {
-        playerName = _new;
-        playerNameLabel.text = playerName;
-        Debug.Log($"NetPlayerScript.cs/SetPlayerName(): {name}'s name has been set to {playerName}");
+        playerName = name;
     }
 
     public override void OnStartServer()
     {
         base.OnStartServer();
-        SetPlayerName("", manager.NewPlayerName);
     }
 
     public override void OnStartClient()
     {
         base.OnStartClient();
-        manager.CmdSetNewPlayerName(netManager.LocalPlayerName);
-        SetPlayerName("", netManager.LocalPlayerName);
+    }
+
+    private void SetPlayerName(string old, string _new)
+    {
+        playerName = _new;
+        playerNameLabel.text = playerName;
+        Debug.Log($"NetPlayerScript.cs/SetPlayerName(Client): {name}'s name has been set to {playerName}");
     }
 
     private void Awake()
