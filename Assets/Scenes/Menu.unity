@@ -4126,6 +4126,11 @@ PrefabInstance:
       propertyPath: m_Name
       value: Glow VFX
       objectReference: {fileID: 0}
+    - target: {fileID: 2762656643940317880, guid: c4c08b658af27e84eb492e28b6031e83,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 2762656643940317885, guid: c4c08b658af27e84eb492e28b6031e83,
         type: 3}
       propertyPath: m_RootOrder
@@ -4298,6 +4303,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_Name
       value: BnW VFX
+      objectReference: {fileID: 0}
+    - target: {fileID: 8192938615218166220, guid: 0d816ecc4af053a4682901cf5cc9dc1a,
+        type: 3}
+      propertyPath: m_IsActive
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8192938615218166222, guid: 0d816ecc4af053a4682901cf5cc9dc1a,
         type: 3}
