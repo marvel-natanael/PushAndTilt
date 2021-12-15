@@ -64,6 +64,8 @@ MonoBehaviour:
   - {fileID: 2413265293222949679, guid: d5eff8359db3bdc45b7e02e9f560882a, type: 3}
   - {fileID: 3771305681486372477, guid: 7895acda6d3712f4591b8f6ced438455, type: 3}
   - {fileID: 8530771638233185060, guid: 021fddba3b37a4e41b6a090bf0f7991a, type: 3}
+  LobbyUIPrefab: {fileID: 6879115648520905627, guid: 29a27035759816c49a4a90eeff6becd7,
+    type: 3}
   manager: {fileID: 0}
   hostName: 
   localPlayerName: 

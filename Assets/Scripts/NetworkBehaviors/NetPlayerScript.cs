@@ -4,14 +4,18 @@ using System.Collections.Generic;
 
 public class NetPlayerScript : NetworkBehaviour
 {
+    #region References
+
     private GameManager manager;
     private MyNetworkManager netManager;
     private GameScreen screen;
     private TextMesh nameLabel;
     private Rigidbody2D rb;
     private float charRadius;
-    [SerializeField] private TextMesh readyLabel;
+    [SerializeField] private TextMesh playerReadyLabel;
     [SerializeField] private TextMesh playerNameLabel;
+
+    #endregion References
 
     #region Jumping Fields
 
@@ -51,29 +55,31 @@ public class NetPlayerScript : NetworkBehaviour
     [SerializeField, Range(0.01f, 1f)]
     private float restitution;
 
+#if !UNITY_EDITOR
+    private float dirX, dirY;
+#endif
+
     #endregion Movement Fields
 
     #region Network Managed Fields
 
     [Header("Network Managed Fields")]
-    [SerializeField, SyncVar(hook = nameof(SetPlayerName))] private string playerName;
+    [SerializeField, SyncVar(hook = nameof(HookSetPlayerName))] private string playerName;
 
-    [SerializeField] private bool ready;
-    [SerializeField] private bool active;
+    [SerializeField, SyncVar(hook = nameof(HookSetPlayerReady))] private bool isReady;
+    [SerializeField, SyncVar] private bool active;
 
     #endregion Network Managed Fields
 
     #region Properties
 
     public bool isAlive => active;
-    public bool isReady => ready;
     public string PlayerName => playerName;
+    public bool IsReady => isReady;
 
     #endregion Properties
 
-#if !UNITY_EDITOR
-    private float dirX, dirY;
-#endif
+    #region Movement_Handlers
 
     /// <summary>
     /// Calculates the maximum height of player's jump.
@@ -160,47 +166,85 @@ public class NetPlayerScript : NetworkBehaviour
         isCharging = Input.GetMouseButton(0);
     }
 
-    /// <summary>
-    /// Toggles player's ready state
-    /// </summary>
-    public void SetReadyLabel(bool state)
-    {
-        if (isLocalPlayer)
-        {
-            readyLabel.color = new Color(100f, 255f, 100f);
-            if (state)
-            {
-                readyLabel.text = "Ready";
-            }
-            else
-            {
-                readyLabel.text = "";
-            }
-        }
-    }
+    #endregion Movement_Handlers
 
+    #region Server_Functions
+
+    /// <summary>
+    /// Server-side function to set this connection's <c>playerName</c> on the server
+    /// </summary>
+    /// <param name="name">New name</param>
     [Server]
     public void ServerSetPlayerName(string name)
     {
         playerName = name;
     }
 
-    public override void OnStartServer()
+    /// <summary>
+    /// Server-side function to set this connection's <c>isReady</c> on the server
+    /// </summary>
+    /// <param name="state">New value</param>
+    [Server]
+    public void ServerSetPlayerReadyState(bool state)
     {
-        base.OnStartServer();
+        isReady = state;
     }
 
-    public override void OnStartClient()
+    [Server]
+    public void ServerSetPlayerAliveState(bool state)
     {
-        base.OnStartClient();
+        active = state;
     }
 
-    private void SetPlayerName(string old, string _new)
+    #endregion Server_Functions
+
+    #region Client_Functions
+
+    /// <summary>
+    /// Client-side function that changes player's ready status
+    /// </summary>
+    /// <param name="state">The ready state of this player</param>
+    [Client]
+    private void ClientSetPlayerReadyState(bool state)
     {
-        playerName = _new;
+        if (isReady) playerReadyLabel.text = $"Ready";
+        else playerReadyLabel.text = $"";
+    }
+
+    [Client]
+    public void ClientSetPlayerActive(bool state)
+    {
+        active = state;
+    }
+
+    #endregion Client_Functions
+
+    #region Hook_Functions
+
+    /// <summary>
+    /// Hook function for <c>playerName</c>
+    /// </summary>
+    /// <param name="old">Old value</param>
+    /// <param name="new">New value</param>
+    private void HookSetPlayerName(string old, string @new)
+    {
+        playerName = @new;
         playerNameLabel.text = playerName;
         Debug.Log($"NetPlayerScript.cs/SetPlayerName(Client): {name}'s name has been set to {playerName}");
     }
+
+    /// <summary>
+    /// Hook function for <c>isReady</c>
+    /// </summary>
+    /// <param name="old">Old value</param>
+    /// <param name="new">New Value</param>
+    private void HookSetPlayerReady(bool old, bool @new)
+    {
+        isReady = @new;
+        ClientSetPlayerReadyState(isReady);
+    }
+
+    #endregion Hook_Functions
 
     private void Awake()
     {
@@ -220,7 +264,7 @@ public class NetPlayerScript : NetworkBehaviour
         {
             Debug.LogError("NetPlayerScript.cs/Awake(): rb is missing!");
         }
-        if (!(readyLabel = transform.GetChild(0).GetComponent<TextMesh>()))
+        if (!(playerReadyLabel = transform.GetChild(0).GetComponent<TextMesh>()))
         {
             Debug.LogError("NetPlayerScript.cs/Awake(): readySprite is missing!");
         }

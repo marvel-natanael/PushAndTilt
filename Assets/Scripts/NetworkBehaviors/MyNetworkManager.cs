@@ -4,9 +4,9 @@ using System.Collections.Generic;
 
 public class MyNetworkManager : NetworkManager
 {
-    [SerializeField] private GameManager manager;
-    [SerializeField] private string hostName;
-    [SerializeField] private string localPlayerName;
+    private GameManager manager;
+    private string hostName;
+    private string localPlayerName;
 
     /// <summary>
     /// Get and set server hostName

@@ -6,59 +6,201 @@ using UnityEngine.UI;
 
 public class LobbyManager : NetworkBehaviour
 {
+    #region Fields
+
     private GameManager manager;
     private MyNetworkManager netManager;
     [SerializeField] private LobbyUIScript lobbyUI;
-    [SerializeField, SyncVar(hook = nameof(SetReadyCount))] private int readyCount;
+
+    //Ready fields
+
+    [SerializeField, SyncVar] private int readyCount;
+    private bool localReady;
+
+    //CountDown
+
+    [SerializeField] private float startingTime;
+    private bool isCounting;
+
+    #endregion Fields
+
+    #region Properties
+
+    public bool LocalReady => localReady;
+
+    #endregion Properties
+
+    #region Server_Functions
+
+    [Server]
+    private void ServerStartGame()
+    {
+        manager.ServerSetRunningState(true);
+        Debug.Log($"{ToString()}: ServerStartGame() done....");
+    }
+
+    [Server]
+    private void ServerStartCountDown(float time)
+    {
+        StartCoroutine(CountDown(time));
+        Invoke(nameof(ServerStartGame), time);
+        Debug.Log($"{ToString()}: ServerStartCountDown({time}) done...");
+    }
+
+    [Server]
+    private void ServerAbortCountDown()
+    {
+        StopCoroutine(nameof(CountDown));
+        CancelInvoke(nameof(ServerStartGame));
+        Debug.Log($"{ToString()}: ServerAbortCountDown() done...");
+    }
+
+    /// <summary>
+    /// Server-side function to set server's <c>readyCount</c> count
+    /// </summary>
+    /// <param name="state">New value</param>
+    [Server]
+    private void ServerSetReadyCount(bool state)
+    {
+        if (state)
+        {
+            if (readyCount < 5)
+            {
+                readyCount++;
+            }
+            else Debug.LogWarning($"{ToString()}: readyCount is out of range, something is not right...");
+        }
+        else
+        {
+            if (readyCount > 0)
+            {
+                readyCount--;
+            }
+            else Debug.LogWarning($"{ToString()}: readyCount is out of range, something is not right...");
+        }
+
+        //ReadyCounter
+        var connCount = NetworkServer.connections.Count;
+        if (connCount > 1)
+        {
+            if (readyCount == connCount)
+            {
+                if (!isCounting)
+                {
+                    Debug.Log($"{ToString()}: ServerSetReadyCount({state}): everyone is ready");
+                    ServerStartCountDown(startingTime);
+                    RpcStartCountdown(startingTime);
+                    isCounting = true;
+                }
+            }
+            else
+            {
+                if (isCounting)
+                {
+                    Debug.Log($"{ToString()}: ServerSetReadyCount({state}): game is aborted");
+                    ServerAbortCountDown();
+                    RpcAbortCountDown();
+                    isCounting = false;
+                }
+            }
+        }
+    }
+
+    #endregion Server_Functions
+
+    #region Client_Functions
+
+    [Client]
+    private void ClientStartCountDown(float time)
+    {
+        StartCoroutine(CountDown(time));
+        Debug.Log($"{ToString()}: ClientStartCountDown({time})");
+    }
+
+    [Client]
+    private void ClientAbortCountDown()
+    {
+        StopCoroutine(nameof(CountDown));
+        lobbyUI.CW_numEmpty();
+        Debug.Log($"{ToString()}: ClientAbortCountDown()");
+    }
+
+    #endregion Client_Functions
+
+    #region Commands
+
+    /// <summary>
+    /// Command to set this connection's ready state
+    /// </summary>
+    /// <remarks>Only to be called by a client</remarks>
+    /// <param name="state">New ready state</param>
+    /// <param name="conn">Leave this blank to retrieve this connection</param>
+    [Command(requiresAuthority = false)]
+    public void CmdSetPlayerReadyState(bool state, NetworkConnectionToClient conn = null)
+    {
+        ServerSetReadyCount(state);
+        conn.identity.GetComponent<NetPlayerScript>().ServerSetPlayerReadyState(state);
+        RpcSetPlayerReadyState(conn, state);
+        Debug.Log($"{ToString()}: Cmd thrown, readyState changed...");
+    }
+
+    #endregion Commands
+
+    #region ClientRPCs
+
+    /// <summary>
+    /// Rpc to verify server's ready state
+    /// </summary>
+    /// <remarks>Only to be called by the server</remarks>
+    /// <param name="conn">this connection</param>
+    /// <param name="state">new state</param>
+    [TargetRpc]
+    private void RpcSetPlayerReadyState(NetworkConnection conn, bool state)
+    {
+        localReady = state;
+        Debug.Log($"{ToString()}: RPC fetch, readyState changed...");
+    }
+
+    [ClientRpc]
+    private void RpcStartCountdown(float time)
+    {
+        ClientStartCountDown(time);
+    }
+
+    [ClientRpc]
+    private void RpcAbortCountDown()
+    {
+        ClientAbortCountDown();
+    }
+
+    #endregion ClientRPCs
 
     public override void OnStartClient()
     {
-        if (!(manager = FindObjectOfType<GameManager>()))
-        {
-            Debug.LogError($"{ToString()}: manager not found");
-        }
-        if (!(netManager = FindObjectOfType<MyNetworkManager>()))
-        {
-            Debug.LogError($"{ToString()}: netManager not found");
-        }
+        localReady = false;
         base.OnStartClient();
     }
 
     public override void OnStartServer()
     {
-        SetReadyCount(0, 0);
+        readyCount = 0;
+        localReady = false;
         base.OnStartServer();
     }
 
-    /// <summary>
-    /// Hook function to set the number of players ready
-    /// </summary>
-    /// <remarks>
-    /// This function is used when a player is connected, but the game hasn't started yet.
-    /// </remarks>
-    /// <param name="_old">[unused]</param>
-    /// <param name="_new">new number</param>
-    private void SetReadyCount(int _old, int _new)
+    private void Start()
     {
-        readyCount = _new;
-        Debug.Log($"{ToString()}: readycount is now {_new}");
+        if (!(manager = FindObjectOfType<GameManager>()))
+            Debug.LogError($"{ToString()}: manager not found");
     }
 
-    [Server]
-    private void ServerSetReadyCount(bool state)
+    private IEnumerator CountDown(float time)
     {
-        if (state) SetReadyCount(readyCount, readyCount + 1);
-        else SetReadyCount(readyCount, readyCount - 1);
-    }
-
-    [Command]
-    public void CmdSetPlayerReadyState(bool state)
-    {
-        RpcSetPlayerReadyState(state);
-    }
-
-    [TargetRpc]
-    private void RpcSetPlayerReadyState(bool state)
-    {
+        while (time > 0)
+        {
+            time -= Time.deltaTime;
+            lobbyUI.CW_numUpdate(time);
+            yield return null;
+        }
     }
 }

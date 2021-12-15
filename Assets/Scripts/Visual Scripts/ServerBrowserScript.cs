@@ -30,6 +30,9 @@ public class ServerBrowserScript : MonoBehaviour
         FindObjectOfType<MyNetworkDiscovery>().StartDiscovery();
     }
 
+    /// <summary>
+    /// Button function that starts a client
+    /// </summary>
     public void StartClient()
     {
         var clientField = GameObject.FindGameObjectWithTag("clientNameField").GetComponent<TMP_InputField>();
@@ -56,6 +59,9 @@ public class ServerBrowserScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Button function that starts a host
+    /// </summary>
     public void StartHost()
     {
         var clientField = GameObject.FindGameObjectWithTag("clientNameField").GetComponent<TMP_InputField>();
@@ -84,6 +90,11 @@ public class ServerBrowserScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Sets a new server entry in the server browser
+    /// </summary>
+    /// <param name="response">response data which contains hostname and player count</param>
+    /// <param name="address">response sender's address</param>
     public void SetData(DiscoveryResponse response, string address)
     {
         if (!registered.ContainsKey(address))
@@ -100,6 +111,9 @@ public class ServerBrowserScript : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Clears old entries
+    /// </summary>
     private void ClearBrowserList()
     {
         var content = GetComponent<ScrollRect>().content.transform;

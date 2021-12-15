@@ -63,7 +63,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  lobbyUIPrefab: {fileID: 6879115648520905627, guid: 29a27035759816c49a4a90eeff6becd7,
-    type: 3}
   lobbyUI: {fileID: 0}
   readyCount: 0
+  startingTime: 5

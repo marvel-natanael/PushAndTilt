@@ -9,32 +9,47 @@ public class LobbyUIScript : MonoBehaviour
 {
     private GameManager gameManager;
     private MyNetworkManager netManager;
+    [SerializeField] private GameObject playerJoinPrefab;
     [SerializeField] private LobbyManager manager;
     [SerializeField] private TextMeshProUGUI hostNameLabel;
     [SerializeField] private TextMeshProUGUI statusLabel;
+    [SerializeField] private TextMeshProUGUI countDownNumberLabel;
     [SerializeField] private Button toggleReadyButton;
+
+    public void ShowPlayerJoin(string name)
+    {
+        var temp = Instantiate(playerJoinPrefab);
+        temp.GetComponent<PlayerJoinLabelScript>().Text = name;
+    }
+
+    public void Button_SetReady()
+    {
+        manager.CmdSetPlayerReadyState(!manager.LocalReady);
+    }
+
+    public void CW_numUpdate(float time)
+    {
+        countDownNumberLabel.text = time.ToString("0.0");
+    }
+
+    public void CW_numEmpty()
+    {
+        countDownNumberLabel.text = string.Empty;
+    }
 
     private void Awake()
     {
-        if (!netManager)
+        if (!(netManager = FindObjectOfType<MyNetworkManager>()))
         {
-            netManager = FindObjectOfType<MyNetworkManager>();
+            Debug.LogError($"{ToString()}: netManager not found");
         }
-        if (!gameManager)
+        if (!(gameManager = FindObjectOfType<GameManager>()))
         {
-            gameManager = FindObjectOfType<GameManager>();
+            Debug.LogError($"{ToString()}: gameManager not found");
         }
-        if (!manager)
+        if (!(manager = FindObjectOfType<LobbyManager>()))
         {
-            manager = FindObjectOfType<LobbyManager>();
-        }
-        if (!hostNameLabel)
-        {
-            hostNameLabel = transform.GetChild(0).GetComponent<TextMeshProUGUI>();
-        }
-        if (!statusLabel)
-        {
-            hostNameLabel = transform.GetChild(1).GetComponent<TextMeshProUGUI>();
+            Debug.LogError($"{ToString()}: lobbyManager not found");
         }
     }
 
@@ -42,17 +57,6 @@ public class LobbyUIScript : MonoBehaviour
     {
         hostNameLabel.text = "Host Name: " + netManager.HostName;
         statusLabel.text = "Waiting for players...";
-    }
-
-    private void Update()
-    {
-        if (gameManager.PlayersConnected < 2)
-        {
-            toggleReadyButton.interactable = false;
-        }
-        else
-        {
-            toggleReadyButton.interactable = true;
-        }
+        CW_numEmpty();
     }
 }
