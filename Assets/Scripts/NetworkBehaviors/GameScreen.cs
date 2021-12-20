@@ -4,8 +4,8 @@ using UnityEngine;
 
 public class GameScreen : NetworkBehaviour
 {
-    [SyncVar(hook = nameof(SetBottomLeft))] private Vector2 corner_BottomLeft;
-    [SyncVar(hook = nameof(SetTopRight))] private Vector2 corner_TopRight;
+    [SerializeField, SyncVar] private Vector2 corner_BottomLeft;
+    [SerializeField, SyncVar] private Vector2 corner_TopRight;
     [SerializeField] private bool showGUI;
     [SerializeField] private Vector2 guiOffset;
 
@@ -44,26 +44,6 @@ public class GameScreen : NetworkBehaviour
         Debug.Log("corner_TopRight.y = " + corner_TopRight.y);
         Debug.Log("corner_BottomLeft.x = " + corner_BottomLeft.x);
         Debug.Log("corner_BottomLeft.y = " + corner_BottomLeft.y);
-    }
-
-    /// <summary>
-    /// Hook function for <c>corner_BottomLeft</c>.
-    /// </summary>
-    /// <param name="old">Old value</param>
-    /// <param name="_new">New value</param>
-    private void SetBottomLeft(Vector2 old, Vector2 _new)
-    {
-        corner_BottomLeft = _new;
-    }
-
-    /// <summary>
-    /// Hook function for <c>corner_TopRight</c>.
-    /// </summary>
-    /// <param name="old">Old value</param>
-    /// <param name="_new">New value</param>
-    private void SetTopRight(Vector2 old, Vector2 _new)
-    {
-        corner_TopRight = _new;
     }
 
     public override void OnStartServer()

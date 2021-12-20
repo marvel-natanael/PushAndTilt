@@ -592,13 +592,15 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a57247663787e0b47927c9aac8025a6b, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  playerJoinPrefab: {fileID: 5662885284403653024, guid: 549f6017852f12848afccfa29602f0b6,
+    type: 3}
+  errorLabelPrefab: {fileID: 5662885284403653024, guid: 69706425c04103943aa14d3b611deb09,
+    type: 3}
   manager: {fileID: 0}
   hostNameLabel: {fileID: 1860217252393425011}
   statusLabel: {fileID: 6018791206862202220}
-  playerJoinLabel: {fileID: 0}
   countDownNumberLabel: {fileID: 2854370019757804654}
   toggleReadyButton: {fileID: 6879115648094048807}
-  countDownNumber: 
 --- !u!223 &6879115648520905630
 Canvas:
   m_ObjectHideFlags: 0

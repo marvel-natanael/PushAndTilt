@@ -41,8 +41,8 @@ public class MyNetworkManager : NetworkManager
     public override void OnServerDisconnect(NetworkConnection conn)
     {
         base.OnServerDisconnect(conn);
-        Debug.Log($"{ToString()}: A player has disconnected");
         manager.ServerSetPlayerCount(NetworkServer.connections.Count);
+        Debug.Log($"{ToString()}: {conn.address} has disconnected");
     }
 
     public override void OnServerAddPlayer(NetworkConnection conn)

@@ -130,7 +130,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 8.843946, y: 152.02611}
+  m_Size: {x: 1.1699219, y: 12.1624365}
   m_EdgeRadius: 0
 --- !u!114 &3363021726179455859
 MonoBehaviour:
@@ -210,7 +210,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  deathEffect: {fileID: 0}
+  deathEffect: {fileID: 6569199451953863753, guid: 3d66186b3f2b5494ca8404126227d484,
+    type: 3}
 --- !u!1 &3771305682307208265
 GameObject:
   m_ObjectHideFlags: 0
@@ -341,7 +342,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 8.843946, y: 152.02611}
+  m_Size: {x: 1.1699219, y: 12.1624365}
   m_EdgeRadius: 0
 --- !u!114 &4902885111156290168
 MonoBehaviour:
@@ -485,7 +486,7 @@ BoxCollider2D:
     adaptiveTiling: 0
   m_AutoTiling: 0
   serializedVersion: 2
-  m_Size: {x: 8.843946, y: 152.02611}
+  m_Size: {x: 1.1699219, y: 12.1624365}
   m_EdgeRadius: 0
 --- !u!114 &5612352176929102939
 MonoBehaviour:

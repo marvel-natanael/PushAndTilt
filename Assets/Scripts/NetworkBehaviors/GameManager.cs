@@ -8,10 +8,13 @@ public class GameManager : NetworkBehaviour
     #region Fields
 
     [SerializeField] private MyNetworkManager netManager;
+    [SerializeField] private bool running;
+
+    //Network-managed Variables
     [SerializeField, SyncVar] private int playersConnected;
-    [SerializeField, SyncVar] private bool running;
+
     [SerializeField, SyncVar] private int playerAlive;
-    [SerializeField, SyncVar] private string newPlayerName;
+    [SerializeField, SyncVar(hook = nameof(HookNewPlayerName))] private string newPlayerName;
 
     [Header("GUI settings")]
     [SerializeField] private bool showGUI;
@@ -32,6 +35,17 @@ public class GameManager : NetworkBehaviour
     #endregion Properties
 
     #region Server_Functions
+
+    [Server]
+    public void ServerStartGame()
+    {
+        running = true;
+        FindObjectOfType<NetworkObstacle>().ServerStartGame();
+        foreach (var conn in NetworkServer.connections)
+        {
+            conn.Value.identity.GetComponent<NetPlayerScript>().ServerSetPlayerAliveState(true);
+        }
+    }
 
     /// <summary>
     /// Server-side function to set server's <c>running</c> state
@@ -118,6 +132,22 @@ public class GameManager : NetworkBehaviour
     }
 
     #endregion ClientRPCs
+
+    #region Hooks
+
+    /// <summary>
+    /// Hook function for <c>newPlayerName</c>
+    /// </summary>
+    /// <param name="old">Old value</param>
+    /// <param name="new">New value</param>
+    [Client]
+    private void HookNewPlayerName(string old, string @new)
+    {
+        newPlayerName = @new;
+        FindObjectOfType<LobbyUIScript>().UI_ShowJoined(newPlayerName);
+    }
+
+    #endregion Hooks
 
     public override void OnStartServer()
     {

@@ -9,17 +9,24 @@ public class LobbyUIScript : MonoBehaviour
 {
     private GameManager gameManager;
     private MyNetworkManager netManager;
+    private LobbyManager manager;
+
     [SerializeField] private GameObject playerJoinPrefab;
-    [SerializeField] private LobbyManager manager;
+    [SerializeField] private GameObject errorLabelPrefab;
     [SerializeField] private TextMeshProUGUI hostNameLabel;
     [SerializeField] private TextMeshProUGUI statusLabel;
     [SerializeField] private TextMeshProUGUI countDownNumberLabel;
-    [SerializeField] private Button toggleReadyButton;
 
-    public void ShowPlayerJoin(string name)
+    public void UI_ShowJoined(string name)
     {
-        var temp = Instantiate(playerJoinPrefab);
-        temp.GetComponent<PlayerJoinLabelScript>().Text = name;
+        var temp = Instantiate(playerJoinPrefab, gameObject.transform);
+        temp.GetComponent<TextMeshProUGUI>().text = $"{name} has joined the game!";
+    }
+
+    public void UI_ShowError(string msg)
+    {
+        var label = Instantiate(errorLabelPrefab, gameObject.transform);
+        label.GetComponent<TextMeshProUGUI>().text = msg;
     }
 
     public void Button_SetReady()

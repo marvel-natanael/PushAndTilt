@@ -9,22 +9,17 @@ public class NetworkObstacle : NetworkBehaviour
     private GameScreen screen;
     private MyNetworkManager netManager;
     private GameManager manager;
-    private GameObject ground;
-    private GameObject sweeper;
+    private GameObject obstacle;
     private GameObject killTrigger;
 
     [Header("Generator Settings")]
-    [SerializeField] private short reduceHoleBy;
-
-    [SerializeField, Range(1.0f, 2.0f), ContextMenuItem("Randomize", "RandomTolerance")] private float holeTolerance;
+    [SerializeField] private float holeTolerance;
 
     [Header("Runtime Variables")]
     [SerializeField] private float speed;
 
     [SerializeField] private float speedMultiplier;
     [SerializeField] private float maxSpeed;
-
-    [Header("Synchronized Variables")]
     [SerializeField] private Direction direction;
 
 #if UNITY_EDITOR
@@ -34,14 +29,14 @@ public class NetworkObstacle : NetworkBehaviour
 
     [SerializeField] private Vector2 guiOffset;
 #endif
-    private readonly SyncList<float> holes = new SyncList<float>();
+    private List<float> holes = new List<float>();
 
     #endregion Fields
 
     /// <summary>
     /// Direction enum used mostly for indicating the direction of the sweepers.
     /// </summary>
-    public enum Direction
+    private enum Direction
     {
         Up, Left, Right
     }
@@ -53,19 +48,13 @@ public class NetworkObstacle : NetworkBehaviour
     [Server]
     private bool GenerateObstacle()
     {
-        if (!manager)
-        {
-            manager = GameObject.FindGameObjectWithTag("Manager").GetComponent<GameManager>();
-        }
-        if (!screen)
-        {
-            screen = GameObject.FindGameObjectWithTag("screen").GetComponent<GameScreen>();
-        }
         holes.Clear();
         //RNG: determine where obstacle will originate
         {
             var num = Random.Range(0f, 1f);
-            var holeCount = Mathf.Clamp(Random.Range(manager.PlayerCount - reduceHoleBy, manager.PlayerCount), 1, manager.PlayerCount);
+            var holeCount = 5;
+            //var holeCount = Random.Range(1, manager.PlayerCount);
+            holeTolerance = Mathf.Clamp(manager.PlayerCount / holeCount, 1f, 2.5f);
             var num2 = screen.ScreenHeight_inWorldUnits / holeCount;
             //Chance 25% right
             if (num < 0.25f)
@@ -114,15 +103,11 @@ public class NetworkObstacle : NetworkBehaviour
     [Server]
     private bool CreateObstacle()
     {
-        if (!sweeper)
-        {
-            Debug.LogError("NetworkObstacle.cs/CreateObstacle(): Failed, sweeper object is null");
-        }
-        var size = sweeper.GetComponent<SpriteRenderer>().bounds.size;
+        var size = obstacle.GetComponent<SpriteRenderer>().bounds.size;
         Vector2 vel = Vector2.zero;
         //First obstacle
         {
-            var instance = Instantiate(sweeper);
+            var instance = Instantiate(obstacle);
             instance.transform.localScale = new Vector3(1, (screen.Corner_TopRight.y - (holes[holes.Count - 1] + holeTolerance)) / size.y, 1);
             switch (direction)
             {
@@ -152,7 +137,7 @@ public class NetworkObstacle : NetworkBehaviour
         {
             for (int i = holes.Count - 2; i > -1; i--)
             {
-                var instance = Instantiate(sweeper);
+                var instance = Instantiate(obstacle);
                 instance.transform.localScale = new Vector3(1, (holes[i + 1] - holeTolerance - (holes[i] + holeTolerance)) / size.y, 1);
                 switch (direction)
                 {
@@ -180,7 +165,7 @@ public class NetworkObstacle : NetworkBehaviour
 
         //Last obstacle
         {
-            var instance = Instantiate(sweeper);
+            var instance = Instantiate(obstacle);
             instance.transform.localScale = new Vector3(1, (holes[0] - holeTolerance - screen.Corner_BottomLeft.y) / size.y, 1);
             switch (direction)
             {
@@ -207,67 +192,52 @@ public class NetworkObstacle : NetworkBehaviour
         return true;
     }
 
-    /// <summary>
-    /// Creates a platform for the players. All connected client, including <c>localPlayer</c> should ran this function once.
-    /// </summary>
-    public void SetupGameWorld()
+    [Server]
+    public void ServerStartGame()
     {
-        //Spawn Ground
-        {
-            var instance = Instantiate(ground);
-        }
-        //Spawn kill triggers
-        {
-            var instance = Instantiate(killTrigger);
-        }
-    }
-
-    public override void OnStartClient()
-    {
-        base.OnStartClient();
-        SetupGameWorld();
-    }
-
-    public override void OnStopClient()
-    {
-        base.OnStopClient();
-        var temp = GameObject.FindGameObjectsWithTag("Ground");
-        foreach (GameObject val in temp)
-        {
-            Destroy(val);
-        }
+        var trigger = Instantiate(killTrigger);
+        NetworkServer.Spawn(trigger);
     }
 
     private void Awake()
     {
-        screen = FindObjectOfType<GameScreen>();
-        manager = FindObjectOfType<GameManager>();
-        netManager = FindObjectOfType<MyNetworkManager>();
-        ground = netManager.spawnPrefabs[0];
-        sweeper = netManager.spawnPrefabs[1];
-        killTrigger = netManager.spawnPrefabs[2];
+        if (!(screen = FindObjectOfType<GameScreen>()))
+            Debug.LogError($"{ToString()}: gameScreen not found");
+        if (!(manager = FindObjectOfType<GameManager>()))
+            Debug.LogError($"{ToString()}: gameManager not found");
+        if (!(netManager = FindObjectOfType<MyNetworkManager>()))
+            Debug.LogError($"{ToString()}: netManager not found");
+        killTrigger = netManager.spawnPrefabs[0];
+        obstacle = netManager.spawnPrefabs[1];
     }
 
-    private void Start()
+    public override void OnStartServer()
     {
-        if (isServer) GenerateObstacle();
+        speed = 5f;
+        speedMultiplier = 5f;
+        maxSpeed = 12f;
+        GenerateObstacle();
+        base.OnStartServer();
     }
 
     private void Update()
     {
-        if (manager.Running)
+        if (isServer)
         {
-            if (transform.childCount < 1)
+            if (manager.Running)
             {
-                if (isServer)
+                if (transform.childCount < 1)
                 {
-                    GenerateObstacle();
-                    CreateObstacle();
+                    if (isServer)
+                    {
+                        GenerateObstacle();
+                        CreateObstacle();
+                    }
                 }
-            }
-            if (speed < maxSpeed)
-            {
-                speed += speedMultiplier / 100 * Time.deltaTime;
+                if (speed < maxSpeed)
+                {
+                    speed += speedMultiplier / 100 * Time.deltaTime;
+                }
             }
         }
     }

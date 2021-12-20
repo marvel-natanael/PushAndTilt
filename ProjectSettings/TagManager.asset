@@ -15,6 +15,7 @@ TagManager:
   - hostNameField
   - mainMenuUI
   - clientNameField
+  - lobbyUI
   layers:
   - Default
   - TransparentFX

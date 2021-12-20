@@ -11,6 +11,7 @@ public class LobbyManager : NetworkBehaviour
     private GameManager manager;
     private MyNetworkManager netManager;
     [SerializeField] private LobbyUIScript lobbyUI;
+    [SerializeField] private bool enableGUI;
 
     //Ready fields
 
@@ -19,7 +20,7 @@ public class LobbyManager : NetworkBehaviour
 
     //CountDown
 
-    [SerializeField] private float startingTime;
+    private float startingTime;
     private bool isCounting;
 
     #endregion Fields
@@ -31,29 +32,6 @@ public class LobbyManager : NetworkBehaviour
     #endregion Properties
 
     #region Server_Functions
-
-    [Server]
-    private void ServerStartGame()
-    {
-        manager.ServerSetRunningState(true);
-        Debug.Log($"{ToString()}: ServerStartGame() done....");
-    }
-
-    [Server]
-    private void ServerStartCountDown(float time)
-    {
-        StartCoroutine(CountDown(time));
-        Invoke(nameof(ServerStartGame), time);
-        Debug.Log($"{ToString()}: ServerStartCountDown({time}) done...");
-    }
-
-    [Server]
-    private void ServerAbortCountDown()
-    {
-        StopCoroutine(nameof(CountDown));
-        CancelInvoke(nameof(ServerStartGame));
-        Debug.Log($"{ToString()}: ServerAbortCountDown() done...");
-    }
 
     /// <summary>
     /// Server-side function to set server's <c>readyCount</c> count
@@ -88,8 +66,8 @@ public class LobbyManager : NetworkBehaviour
                 if (!isCounting)
                 {
                     Debug.Log($"{ToString()}: ServerSetReadyCount({state}): everyone is ready");
-                    ServerStartCountDown(startingTime);
                     RpcStartCountdown(startingTime);
+                    ServerStartCountDown(startingTime);
                     isCounting = true;
                 }
             }
@@ -98,11 +76,41 @@ public class LobbyManager : NetworkBehaviour
                 if (isCounting)
                 {
                     Debug.Log($"{ToString()}: ServerSetReadyCount({state}): game is aborted");
-                    ServerAbortCountDown();
                     RpcAbortCountDown();
+                    ServerAbortCountDown();
                     isCounting = false;
                 }
             }
+        }
+    }
+
+    [Server]
+    private void ServerStartCountDown(float time)
+    {
+        Invoke(nameof(ServerStartGame), time);
+    }
+
+    [Server]
+    private void ServerAbortCountDown()
+    {
+        CancelInvoke(nameof(ServerStartGame));
+    }
+
+    [Server]
+    private void ServerStartGame()
+    {
+        manager.ServerStartGame();
+        manager.ServerSetAlivePlayerCount(NetworkServer.connections.Count);
+        RpcDestroyLobbyUI();
+        ServerMakeEveryoneAlive();
+    }
+
+    [Server]
+    private void ServerMakeEveryoneAlive()
+    {
+        foreach (var conn in NetworkServer.connections)
+        {
+            conn.Value.identity.GetComponent<NetPlayerScript>().ServerSetPlayerAliveState(true);
         }
     }
 
@@ -114,15 +122,14 @@ public class LobbyManager : NetworkBehaviour
     private void ClientStartCountDown(float time)
     {
         StartCoroutine(CountDown(time));
-        Debug.Log($"{ToString()}: ClientStartCountDown({time})");
     }
 
     [Client]
     private void ClientAbortCountDown()
     {
-        StopCoroutine(nameof(CountDown));
+        Debug.Log($"{ToString()}: Coroutine stop");
+        StopAllCoroutines();
         lobbyUI.CW_numEmpty();
-        Debug.Log($"{ToString()}: ClientAbortCountDown()");
     }
 
     #endregion Client_Functions
@@ -138,10 +145,16 @@ public class LobbyManager : NetworkBehaviour
     [Command(requiresAuthority = false)]
     public void CmdSetPlayerReadyState(bool state, NetworkConnectionToClient conn = null)
     {
-        ServerSetReadyCount(state);
-        conn.identity.GetComponent<NetPlayerScript>().ServerSetPlayerReadyState(state);
-        RpcSetPlayerReadyState(conn, state);
-        Debug.Log($"{ToString()}: Cmd thrown, readyState changed...");
+        if (NetworkServer.connections.Count > 1)
+        {
+            ServerSetReadyCount(state);
+            conn.identity.GetComponent<NetPlayerScript>().ServerSetPlayerReadyState(state);
+            RpcSetPlayerReadyState(conn, state, true);
+        }
+        else
+        {
+            RpcSetPlayerReadyState(conn, false, false);
+        }
     }
 
     #endregion Commands
@@ -155,10 +168,16 @@ public class LobbyManager : NetworkBehaviour
     /// <param name="conn">this connection</param>
     /// <param name="state">new state</param>
     [TargetRpc]
-    private void RpcSetPlayerReadyState(NetworkConnection conn, bool state)
+    private void RpcSetPlayerReadyState(NetworkConnection conn, bool state, bool success)
     {
-        localReady = state;
-        Debug.Log($"{ToString()}: RPC fetch, readyState changed...");
+        if (success)
+        {
+            localReady = state;
+        }
+        else
+        {
+            lobbyUI.UI_ShowError($"There should be more than one player to be ready");
+        }
     }
 
     [ClientRpc]
@@ -173,6 +192,12 @@ public class LobbyManager : NetworkBehaviour
         ClientAbortCountDown();
     }
 
+    [ClientRpc]
+    private void RpcDestroyLobbyUI()
+    {
+        Destroy(lobbyUI.gameObject);
+    }
+
     #endregion ClientRPCs
 
     public override void OnStartClient()
@@ -185,13 +210,25 @@ public class LobbyManager : NetworkBehaviour
     {
         readyCount = 0;
         localReady = false;
+        startingTime = 5f;
         base.OnStartServer();
+    }
+
+    public override void OnStopClient()
+    {
+        if (localReady)
+        {
+            CmdSetPlayerReadyState(false);
+        }
+        base.OnStopClient();
     }
 
     private void Start()
     {
         if (!(manager = FindObjectOfType<GameManager>()))
             Debug.LogError($"{ToString()}: manager not found");
+        if (!(lobbyUI = FindObjectOfType<LobbyUIScript>()))
+            Debug.LogError($"{ToString()}: lobbyUI not found");
     }
 
     private IEnumerator CountDown(float time)
@@ -202,5 +239,13 @@ public class LobbyManager : NetworkBehaviour
             lobbyUI.CW_numUpdate(time);
             yield return null;
         }
+    }
+
+    private void OnGUI()
+    {
+        if (!enableGUI) return;
+        GUILayout.BeginArea(new Rect(50, 200, 215, 9999));
+        if (GUILayout.Button("Force run")) ServerStartGame();
+        GUILayout.EndArea();
     }
 }

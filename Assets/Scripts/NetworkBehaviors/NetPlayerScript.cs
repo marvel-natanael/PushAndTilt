@@ -19,24 +19,14 @@ public class NetPlayerScript : NetworkBehaviour
 
     #region Jumping Fields
 
-    [Header("Player jump charge parameters")]
     [SerializeField]
     private GameObject jumpHeightIndicator;
 
-    [SerializeField]
-    private float chargeHeight;
-
-    [SerializeField]
-    private float chargeLimit;
-
-    [SerializeField]
-    private float chargeMultiplier;
-
-    [SerializeField]
-    private float charge;
-
-    [SerializeField]
-    private bool isCharging;
+    [SerializeField] private float chargeHeight;
+    [SerializeField] private float chargeLimit;
+    [SerializeField] private float chargeMultiplier;
+    [SerializeField] private float charge;
+    [SerializeField] private bool isCharging;
 
     #endregion Jumping Fields
 
@@ -67,7 +57,7 @@ public class NetPlayerScript : NetworkBehaviour
     [SerializeField, SyncVar(hook = nameof(HookSetPlayerName))] private string playerName;
 
     [SerializeField, SyncVar(hook = nameof(HookSetPlayerReady))] private bool isReady;
-    [SerializeField, SyncVar] private bool active;
+    [SerializeField, SyncVar(hook = nameof(HookSetPlayerActive))] private bool active;
 
     #endregion Network Managed Fields
 
@@ -87,7 +77,9 @@ public class NetPlayerScript : NetworkBehaviour
     /// <returns>float value containing the max jump speed</returns>
     private float CalculateMaxVelocity()
     {
-        return Mathf.Sqrt(2 * (Mathf.Abs(Physics2D.gravity.y) * rb.gravityScale) * (screen.Corner_TopRight.y - transform.position.y));
+        var temp = Mathf.Sqrt(2 * (Mathf.Abs(Physics2D.gravity.y) * rb.gravityScale) * (screen.Corner_TopRight.y - transform.position.y));
+        Debug.Log($"MaxHeight={temp}");
+        return temp;
     }
 
     /// <summary>
@@ -95,65 +87,62 @@ public class NetPlayerScript : NetworkBehaviour
     /// </summary>
     private void HandleMovements()
     {
-        if (isLocalPlayer)
-        {
-            //Horizontal Movements
+        //Horizontal Movements
 #if UNITY_EDITOR
-            if (Input.GetKey(KeyCode.D) ^ Input.GetKey(KeyCode.A))
+        if (Input.GetKey(KeyCode.D) ^ Input.GetKey(KeyCode.A))
+        {
+            if (Input.GetKey(KeyCode.D))
             {
-                if (Input.GetKey(KeyCode.D))
-                {
-                    if (speed < speedLimit) speed += Time.deltaTime * acceleration;
-                }
-                if (Input.GetKey(KeyCode.A))
-                {
-                    if (speed > -speedLimit) speed -= Time.deltaTime * acceleration;
-                }
+                if (speed < speedLimit) speed += Time.deltaTime * acceleration;
             }
-            else
+            if (Input.GetKey(KeyCode.A))
             {
-                speed = 0;
+                if (speed > -speedLimit) speed -= Time.deltaTime * acceleration;
             }
-            rb.velocity = new Vector2(rb.velocity.x + speed, rb.velocity.y);
-            //X pos clamping
+        }
+        else
+        {
+            speed = 0;
+        }
+        rb.velocity = new Vector2(rb.velocity.x + speed, rb.velocity.y);
+        //X pos clamping
+        {
+            if (transform.position.x + charRadius > screen.Corner_TopRight.x)
             {
-                if (transform.position.x + charRadius > screen.Corner_TopRight.x)
-                {
-                    var deep = transform.position.x + charRadius - screen.Corner_TopRight.x;
-                    rb.velocity = new Vector2(-(Mathf.Abs(rb.velocity.x) + deep) * restitution, rb.velocity.y);
-                }
-                if (transform.position.x - charRadius < screen.Corner_BottomLeft.x)
-                {
-                    var deep = transform.position.x - charRadius + screen.Corner_TopRight.x;
-                    rb.velocity = new Vector2(Mathf.Abs(rb.velocity.x + deep) * restitution, rb.velocity.y);
-                }
+                var deep = transform.position.x + charRadius - screen.Corner_TopRight.x;
+                rb.velocity = new Vector2(-(Mathf.Abs(rb.velocity.x) + deep) * restitution, rb.velocity.y);
             }
+            if (transform.position.x - charRadius < screen.Corner_BottomLeft.x)
+            {
+                var deep = transform.position.x - charRadius + screen.Corner_TopRight.x;
+                rb.velocity = new Vector2(Mathf.Abs(rb.velocity.x + deep) * restitution, rb.velocity.y);
+            }
+        }
 #else
             dirX = Input.acceleration.x * speed;
             transform.position = new Vector2(Mathf.Clamp(transform.position.x, -8.5f, 8.5f), transform.position.y);
             rb.velocity = new Vector2(dirX, rb.velocity.y);
 #endif
-            //Vertical Movements
-            if (rb.velocity.y == 0)
+        //Vertical Movements
+        if (rb.velocity.y == 0)
+        {
+            if (isCharging == true)
             {
-                if (isCharging == true)
+                if (charge <= chargeLimit)
                 {
-                    if (charge <= chargeLimit)
+                    charge += Time.fixedDeltaTime * chargeMultiplier * 10;
+                    if (transform.localScale.y > 0.2f)
                     {
-                        charge += Time.fixedDeltaTime * chargeMultiplier * 10;
-                        if (transform.localScale.y > 0.2f)
-                        {
-                            transform.localScale = new Vector3(transform.localScale.x + Time.fixedDeltaTime, transform.localScale.y - Time.fixedDeltaTime, transform.localScale.z);
-                        }
+                        transform.localScale = new Vector3(transform.localScale.x + Time.fixedDeltaTime, transform.localScale.y - Time.fixedDeltaTime, transform.localScale.z);
                     }
-                    //CalculateChargeVisualization();
                 }
-                else
-                {
-                    rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y + charge);
-                    transform.localScale = Vector3.one;
-                    charge = 0;
-                }
+                //CalculateChargeVisualization();
+            }
+            else
+            {
+                rb.velocity = new Vector2(rb.velocity.x, rb.velocity.y + charge);
+                transform.localScale = Vector3.one;
+                charge = 0;
             }
         }
     }
@@ -194,6 +183,7 @@ public class NetPlayerScript : NetworkBehaviour
     public void ServerSetPlayerAliveState(bool state)
     {
         active = state;
+        if (isReady) isReady = false;
     }
 
     #endregion Server_Functions
@@ -211,13 +201,17 @@ public class NetPlayerScript : NetworkBehaviour
         else playerReadyLabel.text = $"";
     }
 
-    [Client]
-    public void ClientSetPlayerActive(bool state)
+    #endregion Client_Functions
+
+    #region Commands
+
+    [Command]
+    public void CmdDie(NetworkConnectionToClient conn = null)
     {
-        active = state;
+        ServerSetPlayerAliveState(false);
     }
 
-    #endregion Client_Functions
+    #endregion Commands
 
     #region Hook_Functions
 
@@ -226,11 +220,11 @@ public class NetPlayerScript : NetworkBehaviour
     /// </summary>
     /// <param name="old">Old value</param>
     /// <param name="new">New value</param>
+    [Client]
     private void HookSetPlayerName(string old, string @new)
     {
         playerName = @new;
         playerNameLabel.text = playerName;
-        Debug.Log($"NetPlayerScript.cs/SetPlayerName(Client): {name}'s name has been set to {playerName}");
     }
 
     /// <summary>
@@ -238,10 +232,18 @@ public class NetPlayerScript : NetworkBehaviour
     /// </summary>
     /// <param name="old">Old value</param>
     /// <param name="new">New Value</param>
+    [Client]
     private void HookSetPlayerReady(bool old, bool @new)
     {
         isReady = @new;
         ClientSetPlayerReadyState(isReady);
+    }
+
+    [Client]
+    public void HookSetPlayerActive(bool old, bool @new)
+    {
+        active = @new;
+        chargeLimit = CalculateMaxVelocity();
     }
 
     #endregion Hook_Functions
@@ -280,27 +282,30 @@ public class NetPlayerScript : NetworkBehaviour
 
     private void Start()
     {
+        //move
+        speed = 0f;
+        acceleration = 2.5f;
+        speedLimit = 10f;
+
+        //jump
+        isCharging = false;
+        charge = 0f;
+        chargeHeight = 0f;
+        chargeMultiplier = 2.5f;
+        restitution = 0.01f;
+        charRadius = GetComponent<SpriteRenderer>().bounds.size.x / 2f;
+    }
+
+    private void Update()
+    {
         if (isLocalPlayer)
         {
-            chargeLimit = CalculateMaxVelocity();
-            isCharging = false;
-            charRadius = GetComponent<SpriteRenderer>().bounds.size.x / 2;
+            if (active)
+            {
+                Debug.Log("Movement is activated");
+                TouchHandler();
+                HandleMovements();
+            }
         }
-    }
-
-    private void FixedUpdate()
-    {
-        if (active)
-        {
-            TouchHandler();
-            HandleMovements();
-        }
-    }
-
-    private void OnValidate()
-    {
-        if (restitution < 0.01f) restitution = 0.01f;
-        if (restitution > 1f) restitution = 1f;
-        if (chargeMultiplier < 1) chargeMultiplier = 1;
     }
 }
