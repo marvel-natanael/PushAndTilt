@@ -3,17 +3,21 @@ using UnityEngine;
 
 public class ObstacleScript : NetworkBehaviour
 {
+    private NetworkObstacle netObs;
     private GameScreen screen;
     private Vector2 speed;
+
+    private Direction direction;
 
     public Vector2 Speed { get => speed; }
 
     public override void OnStartServer()
     {
+        base.OnStartServer();
+        if (!(netObs = FindObjectOfType<NetworkObstacle>()))
+            Debug.LogError($"{ToString()}: netObs not found");
         if (!(screen = FindObjectOfType<GameScreen>()))
             Debug.LogError($"{ToString()}: screen not found");
-        transform.SetParent(GameObject.FindGameObjectWithTag("obstacleManager").transform);
-        base.OnStartServer();
     }
 
     [Server]
@@ -25,14 +29,16 @@ public class ObstacleScript : NetworkBehaviour
     [Server]
     private void ServerDetectPosition()
     {
-        if (transform.position.y > screen.Corner_TopRight.y + 2.0f)
+        if ((transform.position.y > screen.Corner_TopRight.y + 2.0f))
         {
             NetworkServer.Destroy(gameObject);
         }
+
         if (transform.position.x < screen.Corner_BottomLeft.x - 2.0f)
         {
             NetworkServer.Destroy(gameObject);
         }
+
         if (transform.position.x > screen.Corner_TopRight.x + 2.0f)
         {
             NetworkServer.Destroy(gameObject);

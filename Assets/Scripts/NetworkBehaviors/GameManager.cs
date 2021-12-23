@@ -8,9 +8,10 @@ public class GameManager : NetworkBehaviour
     #region Fields
 
     [SerializeField] private MyNetworkManager netManager;
-    [SerializeField] private bool running;
 
     //Network-managed Variables
+    [SerializeField, SyncVar] private bool running;
+
     [SerializeField, SyncVar] private int playersConnected;
 
     [SerializeField, SyncVar] private int playerAlive;
@@ -20,7 +21,7 @@ public class GameManager : NetworkBehaviour
     [SerializeField] private bool showGUI;
 
     [SerializeField] private Vector2 guiOffset;
-    [SerializeField] private List<NetPlayerScript> players;
+    private readonly SyncList<string> players = new SyncList<string>();
 
     #endregion Fields
 
@@ -29,7 +30,6 @@ public class GameManager : NetworkBehaviour
     public int PlayerCount { get => playerAlive; }
     public bool Running { get => running; }
     public int PlayersConnected => playersConnected;
-
     public string NewPlayerName => newPlayerName;
 
     #endregion Properties
@@ -78,6 +78,38 @@ public class GameManager : NetworkBehaviour
     }
 
     /// <summary>
+    /// Server-side function to decrease the player alive count
+    /// </summary>
+    /// <param name="count">optional: input bigger number to decrease more than one</param>
+    [Server]
+    public void ServerDecreaseAlivePlayer(string name)
+    {
+        if (players.Contains(name))
+        {
+            if (playerAlive > 2)
+            {
+                playerAlive--;
+                players.Remove(name);
+            }
+            else if (playerAlive == 2)
+            {
+                playerAlive--;
+                players.Remove(name);
+                if (players.Count == 1)
+                {
+                    ServerSetRunningState(false);
+                    RpcShowWinner(players[0]);
+                }
+            }
+            else
+            {
+                Debug.LogWarning($"{ToString()}: tried to decrease playerAlive count when count is 0");
+            }
+        }
+        else Debug.LogWarning($"player {name} doesn't exist in player name list");
+    }
+
+    /// <summary>
     /// Server-side function to set server's <c>newPlayerName</c> name
     /// </summary>
     /// <param name="name">New name</param>
@@ -85,6 +117,7 @@ public class GameManager : NetworkBehaviour
     public void ServerSetNewPlayerName(string name)
     {
         newPlayerName = name;
+        players.Add(name);
     }
 
     /// <summary>
@@ -99,6 +132,16 @@ public class GameManager : NetworkBehaviour
 
     #endregion Server_Functions
 
+    #region Client_Functions
+
+    [Client]
+    private void ClientShowWinner(string name)
+    {
+        FindObjectOfType<EndGameUIScript>().ShowWin(name);
+    }
+
+    #endregion Client_Functions
+
     #region Commands
 
     /// <summary>
@@ -112,23 +155,16 @@ public class GameManager : NetworkBehaviour
     {
         ServerSetNewPlayerName(name);
         conn.identity.GetComponent<NetPlayerScript>().ServerSetPlayerName(name);
-        RpcSetNewPlayerName(conn, name);
-        Debug.Log($"{ToString()}: Command ran, sent name = {name}");
     }
 
     #endregion Commands
 
     #region ClientRPCs
 
-    /// <summary>
-    /// Rpc function to tell the client that server has received the name
-    /// </summary>
-    /// <param name="conn">this connection </param>
-    /// <param name="name">New name</param>
-    [TargetRpc]
-    private void RpcSetNewPlayerName(NetworkConnection conn, string name)
+    [ClientRpc]
+    private void RpcShowWinner(string name)
     {
-        Debug.Log($"{ToString()}: Rpc recieved, newPlayerName = {newPlayerName}");
+        ClientShowWinner(name);
     }
 
     #endregion ClientRPCs

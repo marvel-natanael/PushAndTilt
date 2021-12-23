@@ -63,7 +63,6 @@ public class MyNetworkDiscovery : NetworkDiscoveryBase<DiscoveryRequest, Discove
     /// <returns>A message containing information about this server</returns>
     protected override DiscoveryResponse ProcessRequest(DiscoveryRequest request, IPEndPoint endpoint)
     {
-        Debug.Log("MyNetworkDiscovery: netManager.HostName = \"" + netManager.HostName + "\", manager.PlayersConnected = " + NetworkServer.connections.Count);
         var item = new DiscoveryResponse();
         item.hostName = netManager.HostName;
         item.connectedCount = NetworkServer.connections.Count;

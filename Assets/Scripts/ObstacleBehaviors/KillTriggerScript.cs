@@ -1,3 +1,4 @@
+using Mirror;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -8,7 +9,7 @@ public class KillTriggerScript : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Player"))
         {
-            transform.parent.GetComponent<KillTriggerManager>().KillPlayer(collision.gameObject.GetComponent<NetPlayerScript>());
+            transform.parent.GetComponent<KillTriggerManager>().ClientKillPlayer(collision.gameObject.GetComponent<NetPlayerScript>());
         }
     }
 }

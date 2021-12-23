@@ -38,7 +38,7 @@ public class LobbyManager : NetworkBehaviour
     /// </summary>
     /// <param name="state">New value</param>
     [Server]
-    private void ServerSetReadyCount(bool state)
+    public void ServerSetReadyCount(bool state)
     {
         if (state)
         {
@@ -65,7 +65,6 @@ public class LobbyManager : NetworkBehaviour
             {
                 if (!isCounting)
                 {
-                    Debug.Log($"{ToString()}: ServerSetReadyCount({state}): everyone is ready");
                     RpcStartCountdown(startingTime);
                     ServerStartCountDown(startingTime);
                     isCounting = true;
@@ -75,7 +74,6 @@ public class LobbyManager : NetworkBehaviour
             {
                 if (isCounting)
                 {
-                    Debug.Log($"{ToString()}: ServerSetReadyCount({state}): game is aborted");
                     RpcAbortCountDown();
                     ServerAbortCountDown();
                     isCounting = false;
@@ -127,7 +125,6 @@ public class LobbyManager : NetworkBehaviour
     [Client]
     private void ClientAbortCountDown()
     {
-        Debug.Log($"{ToString()}: Coroutine stop");
         StopAllCoroutines();
         lobbyUI.CW_numEmpty();
     }
@@ -212,15 +209,6 @@ public class LobbyManager : NetworkBehaviour
         localReady = false;
         startingTime = 5f;
         base.OnStartServer();
-    }
-
-    public override void OnStopClient()
-    {
-        if (localReady)
-        {
-            CmdSetPlayerReadyState(false);
-        }
-        base.OnStopClient();
     }
 
     private void Start()

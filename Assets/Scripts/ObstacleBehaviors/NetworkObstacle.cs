@@ -2,6 +2,14 @@
 using System.Collections.Generic;
 using UnityEngine;
 
+/// <summary>
+/// Direction enum used mostly for indicating the direction of the sweepers.
+/// </summary>
+public enum Direction
+{
+    Up, Left, Right
+}
+
 public class NetworkObstacle : NetworkBehaviour
 {
     #region Fields
@@ -34,14 +42,6 @@ public class NetworkObstacle : NetworkBehaviour
     #endregion Fields
 
     /// <summary>
-    /// Direction enum used mostly for indicating the direction of the sweepers.
-    /// </summary>
-    private enum Direction
-    {
-        Up, Left, Right
-    }
-
-    /// <summary>
     /// This function will generate new float points as hole points and new sweeper direction.
     /// </summary>
     /// <returns>True, if the function runs properly</returns>
@@ -52,8 +52,7 @@ public class NetworkObstacle : NetworkBehaviour
         //RNG: determine where obstacle will originate
         {
             var num = Random.Range(0f, 1f);
-            var holeCount = 5;
-            //var holeCount = Random.Range(1, manager.PlayerCount);
+            var holeCount = Mathf.Clamp(Random.Range(manager.PlayerCount - 2, manager.PlayerCount), 1, 5);
             holeTolerance = Mathf.Clamp(manager.PlayerCount / holeCount, 1f, 2.5f);
             var num2 = screen.ScreenHeight_inWorldUnits / holeCount;
             //Chance 25% right
@@ -107,7 +106,7 @@ public class NetworkObstacle : NetworkBehaviour
         Vector2 vel = Vector2.zero;
         //First obstacle
         {
-            var instance = Instantiate(obstacle);
+            var instance = Instantiate(obstacle, transform);
             instance.transform.localScale = new Vector3(1, (screen.Corner_TopRight.y - (holes[holes.Count - 1] + holeTolerance)) / size.y, 1);
             switch (direction)
             {
@@ -128,7 +127,6 @@ public class NetworkObstacle : NetworkBehaviour
                     break;
             }
             instance.GetComponent<ObstacleScript>().SetVelocity(vel);
-            instance.transform.parent = transform;
             NetworkServer.Spawn(instance);
         }
 
@@ -137,7 +135,7 @@ public class NetworkObstacle : NetworkBehaviour
         {
             for (int i = holes.Count - 2; i > -1; i--)
             {
-                var instance = Instantiate(obstacle);
+                var instance = Instantiate(obstacle, transform);
                 instance.transform.localScale = new Vector3(1, (holes[i + 1] - holeTolerance - (holes[i] + holeTolerance)) / size.y, 1);
                 switch (direction)
                 {
@@ -158,14 +156,13 @@ public class NetworkObstacle : NetworkBehaviour
                         break;
                 }
                 instance.GetComponent<ObstacleScript>().SetVelocity(vel);
-                instance.transform.parent = transform;
                 NetworkServer.Spawn(instance);
             }
         }
 
         //Last obstacle
         {
-            var instance = Instantiate(obstacle);
+            var instance = Instantiate(obstacle, transform);
             instance.transform.localScale = new Vector3(1, (holes[0] - holeTolerance - screen.Corner_BottomLeft.y) / size.y, 1);
             switch (direction)
             {
@@ -186,7 +183,6 @@ public class NetworkObstacle : NetworkBehaviour
                     break;
             }
             instance.GetComponent<ObstacleScript>().SetVelocity(vel);
-            instance.transform.parent = transform;
             NetworkServer.Spawn(instance);
         }
         return true;
@@ -213,11 +209,11 @@ public class NetworkObstacle : NetworkBehaviour
 
     public override void OnStartServer()
     {
+        base.OnStartServer();
         speed = 5f;
         speedMultiplier = 5f;
         maxSpeed = 12f;
         GenerateObstacle();
-        base.OnStartServer();
     }
 
     private void Update()
@@ -228,11 +224,8 @@ public class NetworkObstacle : NetworkBehaviour
             {
                 if (transform.childCount < 1)
                 {
-                    if (isServer)
-                    {
-                        GenerateObstacle();
-                        CreateObstacle();
-                    }
+                    GenerateObstacle();
+                    CreateObstacle();
                 }
                 if (speed < maxSpeed)
                 {
@@ -241,6 +234,8 @@ public class NetworkObstacle : NetworkBehaviour
             }
         }
     }
+
+#if UNITY_EDITOR
 
     private void OnGUI()
     {
@@ -272,4 +267,6 @@ public class NetworkObstacle : NetworkBehaviour
             }
         }
     }
+
+#endif
 }

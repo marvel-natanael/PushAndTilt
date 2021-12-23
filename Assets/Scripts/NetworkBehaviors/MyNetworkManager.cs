@@ -24,7 +24,6 @@ public class MyNetworkManager : NetworkManager
     public override void OnServerConnect(NetworkConnection conn)
     {
         base.OnServerConnect(conn);
-        Debug.Log($"{ToString()}: A player has joined");
         if (!(manager = FindObjectOfType<GameManager>()))
         {
             Debug.LogError($"{ToString()}: manager not found");
@@ -32,16 +31,10 @@ public class MyNetworkManager : NetworkManager
         manager.ServerSetPlayerCount(NetworkServer.connections.Count);
     }
 
-    public override void OnClientConnect(NetworkConnection conn)
-    {
-        base.OnClientConnect(conn);
-        Debug.Log("You're connected!");
-    }
-
     public override void OnServerDisconnect(NetworkConnection conn)
     {
-        base.OnServerDisconnect(conn);
         manager.ServerSetPlayerCount(NetworkServer.connections.Count);
+        base.OnServerDisconnect(conn);
         Debug.Log($"{ToString()}: {conn.address} has disconnected");
     }
 
@@ -57,5 +50,37 @@ public class MyNetworkManager : NetworkManager
         player.name = $"{playerPrefab.name} [connId={conn.connectionId}]";
         player.GetComponent<NetPlayerScript>().ServerSetPlayerName(manager.NewPlayerName);
         NetworkServer.AddPlayerForConnection(conn, player);
+    }
+
+    public override void OnApplicationQuit()
+    {
+        if (NetworkServer.active)
+        {
+            ServerDisconnect();
+        }
+        if (NetworkClient.active)
+        {
+            ClientDisconnect();
+        }
+        base.OnApplicationQuit();
+    }
+
+    [Server]
+    public void ServerDisconnect()
+    {
+    }
+
+    [Client]
+    public void ClientDisconnect()
+    {
+        var player = NetworkClient.localPlayer.GetComponent<NetPlayerScript>();
+        if (player.IsReady)
+        {
+            FindObjectOfType<LobbyManager>().CmdSetPlayerReadyState(false);
+        }
+        if (player.isAlive)
+        {
+            player.CmdDie(null);
+        }
     }
 }

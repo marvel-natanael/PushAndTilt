@@ -212,6 +212,7 @@ MonoBehaviour:
   syncInterval: 0.1
   deathEffect: {fileID: 6569199451953863753, guid: 3d66186b3f2b5494ca8404126227d484,
     type: 3}
+  deathPoint: {fileID: 0}
 --- !u!1 &3771305682307208265
 GameObject:
   m_ObjectHideFlags: 0

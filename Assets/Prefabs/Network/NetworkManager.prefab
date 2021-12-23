@@ -59,7 +59,7 @@ MonoBehaviour:
   playerPrefab: {fileID: 4727917183509554448, guid: fd79e61ddd604c3419efd2323ce95cb9,
     type: 3}
   autoCreatePlayer: 1
-  playerSpawnMethod: 0
+  playerSpawnMethod: 1
   spawnPrefabs:
   - {fileID: 3771305681486372477, guid: 7895acda6d3712f4591b8f6ced438455, type: 3}
   - {fileID: 8530771638233185060, guid: 021fddba3b37a4e41b6a090bf0f7991a, type: 3}

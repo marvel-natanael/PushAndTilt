@@ -16,6 +16,7 @@ TagManager:
   - mainMenuUI
   - clientNameField
   - lobbyUI
+  - deathPoint
   layers:
   - Default
   - TransparentFX

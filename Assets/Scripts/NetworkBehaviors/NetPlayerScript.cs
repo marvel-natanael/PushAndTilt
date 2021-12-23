@@ -27,6 +27,7 @@ public class NetPlayerScript : NetworkBehaviour
     [SerializeField] private float chargeMultiplier;
     [SerializeField] private float charge;
     [SerializeField] private bool isCharging;
+    [SerializeField] private float squishMultiplier;
 
     #endregion Jumping Fields
 
@@ -75,16 +76,17 @@ public class NetPlayerScript : NetworkBehaviour
     /// Calculates the maximum height of player's jump.
     /// </summary>
     /// <returns>float value containing the max jump speed</returns>
+    [Client]
     private float CalculateMaxVelocity()
     {
         var temp = Mathf.Sqrt(2 * (Mathf.Abs(Physics2D.gravity.y) * rb.gravityScale) * (screen.Corner_TopRight.y - transform.position.y));
-        Debug.Log($"MaxHeight={temp}");
         return temp;
     }
 
     /// <summary>
     /// Handles the player movement
     /// </summary>
+    [Client]
     private void HandleMovements()
     {
         //Horizontal Movements
@@ -133,7 +135,7 @@ public class NetPlayerScript : NetworkBehaviour
                     charge += Time.fixedDeltaTime * chargeMultiplier * 10;
                     if (transform.localScale.y > 0.2f)
                     {
-                        transform.localScale = new Vector3(transform.localScale.x + Time.fixedDeltaTime, transform.localScale.y - Time.fixedDeltaTime, transform.localScale.z);
+                        transform.localScale = new Vector3(transform.localScale.x + (Time.fixedDeltaTime * squishMultiplier), transform.localScale.y - (Time.fixedDeltaTime * squishMultiplier), transform.localScale.z);
                     }
                 }
                 //CalculateChargeVisualization();
@@ -201,17 +203,36 @@ public class NetPlayerScript : NetworkBehaviour
         else playerReadyLabel.text = $"";
     }
 
+    [Client]
+    private void ClientTeleportPlayer(Transform point)
+    {
+        transform.position = point.position;
+    }
+
     #endregion Client_Functions
 
     #region Commands
 
-    [Command]
-    public void CmdDie(NetworkConnectionToClient conn = null)
+    [Command(requiresAuthority = false)]
+    public void CmdDie(Transform deathPoint, NetworkConnectionToClient conn = null)
     {
         ServerSetPlayerAliveState(false);
+        manager.ServerDecreaseAlivePlayer(playerName);
+        if (deathPoint)
+            RpcDie(conn, deathPoint);
     }
 
     #endregion Commands
+
+    #region ClientRPCs
+
+    [TargetRpc]
+    private void RpcDie(NetworkConnection conn, Transform point)
+    {
+        ClientTeleportPlayer(point);
+    }
+
+    #endregion ClientRPCs
 
     #region Hook_Functions
 
@@ -243,7 +264,6 @@ public class NetPlayerScript : NetworkBehaviour
     public void HookSetPlayerActive(bool old, bool @new)
     {
         active = @new;
-        chargeLimit = CalculateMaxVelocity();
     }
 
     #endregion Hook_Functions
@@ -282,30 +302,24 @@ public class NetPlayerScript : NetworkBehaviour
 
     private void Start()
     {
-        //move
-        speed = 0f;
-        acceleration = 2.5f;
-        speedLimit = 10f;
-
-        //jump
-        isCharging = false;
-        charge = 0f;
-        chargeHeight = 0f;
-        chargeMultiplier = 2.5f;
-        restitution = 0.01f;
+        chargeLimit = CalculateMaxVelocity();
         charRadius = GetComponent<SpriteRenderer>().bounds.size.x / 2f;
     }
 
-    private void Update()
+    private void FixedUpdate()
     {
         if (isLocalPlayer)
         {
             if (active)
             {
-                Debug.Log("Movement is activated");
                 TouchHandler();
                 HandleMovements();
             }
         }
+    }
+
+    private void OnValidate()
+    {
+        squishMultiplier = Mathf.Clamp(squishMultiplier, 0f, 1f);
     }
 }

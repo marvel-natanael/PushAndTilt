@@ -47,7 +47,7 @@ MonoBehaviour:
   sceneId: 0
   serverOnly: 0
   visible: 0
-  m_AssetId: 
+  m_AssetId: 57999ac1556a40246bc7ba8f9008eeff
   hasSpawned: 0
 --- !u!114 &5415963241730171024
 MonoBehaviour:
@@ -63,11 +63,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.01
-  reduceHoleBy: 2
   holeTolerance: 1
   speed: 5
   speedMultiplier: 2
   maxSpeed: 12
   direction: 0
-  showGUI: 0
-  guiOffset: {x: 0, y: 50}
+  showGUI: 1
+  guiOffset: {x: 0, y: 500}
