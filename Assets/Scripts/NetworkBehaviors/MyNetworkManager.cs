@@ -73,14 +73,17 @@ public class MyNetworkManager : NetworkManager
     [Client]
     public void ClientDisconnect()
     {
-        var player = NetworkClient.localPlayer.GetComponent<NetPlayerScript>();
-        if (player.IsReady)
+        NetPlayerScript player;
+        if (player = NetworkClient.localPlayer.GetComponent<NetPlayerScript>())
         {
-            FindObjectOfType<LobbyManager>().CmdSetPlayerReadyState(false);
-        }
-        if (player.isAlive)
-        {
-            player.CmdDie(null);
+            if (player.IsReady)
+            {
+                FindObjectOfType<LobbyManager>().CmdSetPlayerReadyState(false);
+            }
+            if (player.isAlive)
+            {
+                player.CmdDie(null);
+            }
         }
     }
 }

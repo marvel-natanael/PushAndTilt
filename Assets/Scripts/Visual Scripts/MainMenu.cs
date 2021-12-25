@@ -7,8 +7,9 @@ using DG.Tweening;
 
 public class MainMenu : MonoBehaviour
 {
-    private static bool isShown = false;
+    private bool isShown = false;
     private bool isMusicOn, isSfxOn;
+    private bool isServerBrowser = false;
     public Button musicButton, sfxButton;
     public Sprite musicOn, musicOff, sfxOn, sfxOff;
     public GameObject creditsObj;
@@ -23,17 +24,23 @@ public class MainMenu : MonoBehaviour
         creditsObj.gameObject.SetActive(false);
         settingsObj.gameObject.SetActive(false);
     }
+
     //Transition
     public void swipeRight()
     {
+        UI_CloseAllPopUps();
         mainMenu.DOAnchorPos(new Vector2(-2000, 0), 0.25f);
         serverMenu.DOAnchorPos(new Vector2(0, 0), 0.25f);
+        isServerBrowser = true;
     }
+
     public void swipeLeft()
     {
         mainMenu.DOAnchorPos(new Vector2(0, 0), 0.25f);
         serverMenu.DOAnchorPos(new Vector2(2000, 0), 0.25f);
+        isServerBrowser = false;
     }
+
     //Settings
     public void showSettings()
     {
@@ -60,7 +67,17 @@ public class MainMenu : MonoBehaviour
                     break;
                 }
         }
+    }
 
+    public void UI_QuitApplication()
+    {
+        Application.Quit();
+    }
+
+    private void UI_CloseAllPopUps()
+    {
+        creditsObj.gameObject.SetActive(false);
+        settingsObj.gameObject.SetActive(false);
     }
 
     public void showCredits()
@@ -87,6 +104,21 @@ public class MainMenu : MonoBehaviour
                     musicButton.GetComponent<Image>().sprite = musicOn;
                     break;
                 }
+        }
+    }
+
+    private void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            if (isServerBrowser)
+            {
+                swipeLeft();
+            }
+            else
+            {
+                UI_CloseAllPopUps();
+            }
         }
     }
 }
