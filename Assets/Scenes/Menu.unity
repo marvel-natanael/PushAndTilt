@@ -997,7 +997,7 @@ Camera:
   m_Depth: -1
   m_CullingMask:
     serializedVersion: 2
-    m_Bits: 4294967295
+    m_Bits: 247
   m_RenderingPath: -1
   m_TargetTexture: {fileID: 0}
   m_TargetDisplay: 0
@@ -2500,8 +2500,7 @@ MonoBehaviour:
 
     aydin ihsan i n
 
-    marvel natanael
-    s'
+    marvel natanael s'
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 60e077bb14e94344893d91c880ff2e5b, type: 2}
   m_sharedMaterial: {fileID: 5401617888505923478, guid: 60e077bb14e94344893d91c880ff2e5b,
@@ -3935,19 +3934,11 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 2062592083}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 1418240482}
-        m_TargetAssemblyTypeName: MainMenu, Assembly-CSharp
-        m_MethodName: UI_QuitApplication
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: [{m_Target: {fileID: 1418240482}, m_TargetAssemblyTypeName: 'MainMenu,
+            Assembly-CSharp', m_MethodName: UI_QuitApplication, m_Mode: 1, m_Arguments: {
+            m_ObjectArgument: {fileID: 0}, m_ObjectArgumentAssemblyTypeName: 'UnityEngine.Object,
+              UnityEngine', m_IntArgument: 0, m_FloatArgument: 0, m_StringArgument: '',
+            m_BoolArgument: 0}, m_CallState: 2}]
 --- !u!114 &2062592083
 MonoBehaviour:
   m_ObjectHideFlags: 0
