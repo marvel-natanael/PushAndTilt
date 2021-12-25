@@ -12,8 +12,11 @@ public class GlowVFX : MonoBehaviour
     float value = 0.5f;
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
     void Start()
 =======
+=======
+>>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
     [SerializeField]
@@ -22,6 +25,9 @@ public class GlowVFX : MonoBehaviour
     float minvalue = 0.0f;
     void Awake()
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
@@ -34,6 +40,7 @@ public class GlowVFX : MonoBehaviour
     {
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
         if(increment)
         {
             value += 0.1f;
@@ -41,11 +48,16 @@ public class GlowVFX : MonoBehaviour
 =======
 =======
 >>>>>>> Stashed changes
+=======
+>>>>>>> Stashed changes
         if (increment)
         {
             value += 0.1f;
             if (value >= maxvalue) increment = false;
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
+>>>>>>> Stashed changes
+=======
 >>>>>>> Stashed changes
 =======
 >>>>>>> Stashed changes
@@ -55,7 +67,11 @@ public class GlowVFX : MonoBehaviour
             value -= 0.1f;
 <<<<<<< Updated upstream
 <<<<<<< Updated upstream
+<<<<<<< Updated upstream
             if (value <= 0.5f) increment = true;
+=======
+            if (value <= minvalue) increment = true;
+>>>>>>> Stashed changes
 =======
             if (value <= minvalue) increment = true;
 >>>>>>> Stashed changes
