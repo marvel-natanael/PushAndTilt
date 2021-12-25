@@ -5,7 +5,8 @@ using UnityEngine.UI;
 using UnityEngine.TestTools;
 using UnityEngine.SceneManagement;
 using TMPro;
-public class PlayModeTests
+
+public class PlayModeTest
 {
     //Load the scene to test
     [OneTimeSetUp]

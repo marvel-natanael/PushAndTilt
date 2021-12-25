@@ -155,6 +155,8 @@ GameObject:
   - component: {fileID: 3771305681486372476}
   - component: {fileID: 8147342562735335708}
   - component: {fileID: 3067104287314614493}
+  - component: {fileID: 2319219796176444328}
+  - component: {fileID: -1664269120642365289}
   m_Layer: 7
   m_Name: KillTriggers
   m_TagString: Untagged
@@ -213,6 +215,39 @@ MonoBehaviour:
   deathEffect: {fileID: 6569199451953863753, guid: 3d66186b3f2b5494ca8404126227d484,
     type: 3}
   deathPoint: {fileID: 0}
+--- !u!114 &2319219796176444328
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3771305681486372477}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 5f4c072a9043eb24a839331c49309a7d, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  volume: {fileID: -1664269120642365289}
+  value: 0.5
+  maxvalue: 50
+  minvalue: 0
+--- !u!114 &-1664269120642365289
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 3771305681486372477}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 8b9a305e18de0c04dbd257a21cd47087, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  sharedProfile: {fileID: 11400000, guid: 2acfa81b0809343499ad8c444f2ed643, type: 2}
+  isGlobal: 1
+  blendDistance: 0
+  weight: 1
+  priority: 0
 --- !u!1 &3771305682307208265
 GameObject:
   m_ObjectHideFlags: 0

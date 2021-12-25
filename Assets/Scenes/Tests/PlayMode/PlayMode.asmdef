@@ -1,16 +1,5 @@
 {
-    "name": "Tests",
-<<<<<<< Updated upstream
-<<<<<<< Updated upstream
-    "optionalUnityReferences": [
-        "TestAssemblies"
-    ],
-    "includePlatforms": [
-        "Editor"
-    ]
-=======
-=======
->>>>>>> Stashed changes
+    "name": "PlayMode",
     "rootNamespace": "",
     "references": [
         "UnityEngine.TestRunner",
@@ -30,8 +19,4 @@
     ],
     "versionDefines": [],
     "noEngineReferences": false
-<<<<<<< Updated upstream
->>>>>>> Stashed changes
-=======
->>>>>>> Stashed changes
 }
