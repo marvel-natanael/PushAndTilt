@@ -26,7 +26,7 @@ public class EndGameUIScript : MonoBehaviour
 
     public void UI_ExitGame()
     {
-        netManager.ClientDisconnect();
+        netManager.Disconnect();
     }
 
     private void Awake()

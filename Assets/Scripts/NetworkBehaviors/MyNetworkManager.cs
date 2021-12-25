@@ -52,26 +52,7 @@ public class MyNetworkManager : NetworkManager
         NetworkServer.AddPlayerForConnection(conn, player);
     }
 
-    public override void OnApplicationQuit()
-    {
-        if (NetworkServer.active)
-        {
-            ServerDisconnect();
-        }
-        if (NetworkClient.active)
-        {
-            ClientDisconnect();
-        }
-        base.OnApplicationQuit();
-    }
-
-    [Server]
-    public void ServerDisconnect()
-    {
-    }
-
-    [Client]
-    public void ClientDisconnect()
+    public override void OnStopClient()
     {
         NetPlayerScript player;
         if (player = NetworkClient.localPlayer.GetComponent<NetPlayerScript>())
@@ -84,6 +65,19 @@ public class MyNetworkManager : NetworkManager
             {
                 player.CmdDie(null);
             }
+        }
+        base.OnStopClient();
+    }
+
+    public void Disconnect()
+    {
+        if (NetworkClient.isConnected)
+        {
+            StopClient();
+        }
+        if (NetworkServer.active)
+        {
+            StopServer();
         }
     }
 }
