@@ -20,7 +20,7 @@ public class PlayModeTest
     //2. Start a game as host
     //3. Player spawned
     [UnityTest]
-    public IEnumerator startMatchTest()
+    public IEnumerator StartMatchTest()
     {
         //1.
         var playButtonObject = GameObject.Find("Play Button");
@@ -32,8 +32,8 @@ public class PlayModeTest
         hostOptionPlayerNameText.text = "dummy";
         Assert.AreEqual("dummy", hostOptionPlayerNameText.text);
 
-        var hostOptionHostName = GameObject.Find("HostOptionHostName_");
-        var hostOptionHostNameText = hostOptionHostName.GetComponentInChildren<TextMeshProUGUI>();
+        var hostOptionHostName = GameObject.Find("HostOptionHostName_inputField");
+        var hostOptionHostNameText = hostOptionHostName.GetComponentInChildren<TMP_InputField>();
         hostOptionHostNameText.text = "dummy";
         Assert.AreEqual("dummy", hostOptionHostNameText.text);
 
@@ -45,6 +45,11 @@ public class PlayModeTest
         //3.
         var player = GameObject.Find("Player [connId=0]");
         Assert.IsNotNull(player);
+
+        var playerName = GameObject.Find("Player_nameLabel");
+        var PlayerNameText = playerName.GetComponent<TextMesh>().text;
+        Assert.IsNotNull(PlayerNameText);
+        Assert.AreEqual(PlayerNameText, hostOptionHostNameText.text);
     }
 
     //Join match as client Test Scenario
@@ -52,7 +57,7 @@ public class PlayModeTest
     //2. Join an already running game
     //3. Player spawned
     [UnityTest]
-    public IEnumerator joinMatchTest()
+    public IEnumerator JoinMatchTest()
     {
         //1.
         var playButtonObject = GameObject.Find("Play Button");
@@ -92,7 +97,7 @@ public class PlayModeTest
     //6. Check if credits displayed
     //7. Close credits
     [UnityTest]
-    public IEnumerator menuUITest()
+    public IEnumerator MenuUITest()
     {
         //1.
         var settingButtonObject = GameObject.Find("Setting Button");
