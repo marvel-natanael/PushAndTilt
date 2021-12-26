@@ -11,7 +11,7 @@ GameObject:
   - component: {fileID: 874256062695450685}
   - component: {fileID: 1428870375101466094}
   - component: {fileID: 4921833301901687336}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Player_bottom
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -81,7 +81,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8130058980045340410}
   - component: {fileID: 8393256919209832364}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Player_trail
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -225,7 +225,7 @@ GameObject:
   - component: {fileID: 5861901861619782551}
   - component: {fileID: 7995360056632543897}
   - component: {fileID: -5795353179386663173}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -299,7 +299,7 @@ SpriteRenderer:
   m_RenderingLayerMask: 1
   m_RendererPriority: 0
   m_Materials:
-  - {fileID: 10754, guid: 0000000000000000f000000000000000, type: 0}
+  - {fileID: 10306, guid: 0000000000000000f000000000000000, type: 0}
   m_StaticBatchInfo:
     firstSubMesh: 0
     subMeshCount: 0
@@ -435,7 +435,7 @@ GameObject:
   - component: {fileID: 2188023550799909201}
   - component: {fileID: 5595847908699610217}
   - component: {fileID: 3085501954027978559}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: bottom_grind
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5239,7 +5239,7 @@ GameObject:
   - component: {fileID: 3872404996868490895}
   - component: {fileID: 2120806196630548610}
   - component: {fileID: 7839854351380143040}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Player_readySign
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -5334,7 +5334,7 @@ GameObject:
   - component: {fileID: 3816825384888462442}
   - component: {fileID: 5266140916838821584}
   - component: {fileID: 3482941042195053209}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Player_nameLabel
   m_TagString: Untagged
   m_Icon: {fileID: 0}

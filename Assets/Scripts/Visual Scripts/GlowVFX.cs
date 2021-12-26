@@ -10,7 +10,11 @@ public class GlowVFX : MonoBehaviour
     bool increment = true;
     [SerializeField]
     float value = 0.5f;
-    void Start()
+    [SerializeField]
+    float maxvalue = 50.0f;
+    [SerializeField]
+    float minvalue = 0.0f;
+    void Awake()
     {
         volume.profile.TryGetSettings(out bloom);
     }
@@ -18,15 +22,15 @@ public class GlowVFX : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        if(increment)
+        if (increment)
         {
             value += 0.1f;
-            if (value >= 10.0f) increment = false;
+            if (value >= maxvalue) increment = false;
         }
         else
         {
             value -= 0.1f;
-            if (value <= 0.5f) increment = true;
+            if (value <= minvalue) increment = true;
         }
         bloom.intensity.value = value;
     }
