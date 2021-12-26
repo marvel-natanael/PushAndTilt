@@ -11,13 +11,6 @@ public class ServerBrowserScript : MonoBehaviour
 
     [HideInInspector] public ServerBrowserButtonScript CurrentSelected;
 
-    private void Awake()
-    {
-        registered = new Dictionary<string, GameObject>();
-        ClearBrowserList();
-        FindObjectOfType<MyNetworkDiscovery>().StartDiscovery();
-    }
-
     /// <summary>
     /// Button function that starts a client
     /// </summary>
@@ -108,8 +101,9 @@ public class ServerBrowserScript : MonoBehaviour
     /// <summary>
     /// Clears old entries
     /// </summary>
-    private void ClearBrowserList()
+    public void ClearBrowserList()
     {
+        registered = new Dictionary<string, GameObject>();
         var content = GetComponent<ScrollRect>().content.transform;
         if (content.childCount != 0)
         {
@@ -118,5 +112,11 @@ public class ServerBrowserScript : MonoBehaviour
                 Destroy(content.GetChild(i - 1).gameObject);
             }
         }
+    }
+
+    private void Start()
+    {
+        ClearBrowserList();
+        FindObjectOfType<MyNetworkDiscovery>().StartDiscovery();
     }
 }

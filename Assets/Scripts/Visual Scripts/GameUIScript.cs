@@ -18,16 +18,12 @@ public class GameUIScript : MonoBehaviour
         netManager.Disconnect();
     }
 
-    private void Awake()
+    private void Start()
     {
         if (!(netManager = FindObjectOfType<MyNetworkManager>()))
         {
             Debug.LogError($"{ToString()}: netManager not found");
         }
-    }
-
-    private void Start()
-    {
         confUI.SetActive(false);
     }
 

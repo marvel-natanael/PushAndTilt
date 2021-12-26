@@ -195,7 +195,7 @@ public class NetworkObstacle : NetworkBehaviour
         NetworkServer.Spawn(trigger);
     }
 
-    private void Awake()
+    public override void OnStartServer()
     {
         if (!(screen = FindObjectOfType<GameScreen>()))
             Debug.LogError($"{ToString()}: gameScreen not found");
@@ -205,15 +205,11 @@ public class NetworkObstacle : NetworkBehaviour
             Debug.LogError($"{ToString()}: netManager not found");
         killTrigger = netManager.spawnPrefabs[0];
         obstacle = netManager.spawnPrefabs[1];
-    }
-
-    public override void OnStartServer()
-    {
-        base.OnStartServer();
         speed = 5f;
         speedMultiplier = 5f;
         maxSpeed = 12f;
         GenerateObstacle();
+        base.OnStartServer();
     }
 
     private void Update()

@@ -5,23 +5,19 @@ using UnityEngine;
 public class PlayerVFX : MonoBehaviour
 {
     // Start is called before the first frame update
-    private ParticleSystem GrindEffect;
+    [SerializeField] private ParticleSystem grindEffect;
 
     private void Start()
     {
-        GrindEffect = GetComponentInChildren<ParticleSystem>();
-    }
-
-    // Update is called once per frame
-    private void Update()
-    {
+        if (!(grindEffect = GetComponentInChildren<ParticleSystem>()))
+            Debug.LogError($"{ToString()}: grindEffect not found");
     }
 
     private void OnTriggerEnter2D(Collider2D collision)
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
-            GrindEffect.gameObject.SetActive(true);
+            grindEffect.gameObject.SetActive(true);
         }
     }
 
@@ -29,7 +25,7 @@ public class PlayerVFX : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Ground"))
         {
-            GrindEffect.gameObject.SetActive(false);
+            grindEffect.gameObject.SetActive(false);
         }
     }
 }

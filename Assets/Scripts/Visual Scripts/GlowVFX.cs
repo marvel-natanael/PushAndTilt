@@ -6,21 +6,25 @@ using UnityEngine.Rendering.PostProcessing;
 public class GlowVFX : MonoBehaviour
 {
     public PostProcessVolume volume;
-    Bloom bloom;
-    bool increment = true;
+    private Bloom bloom;
+    private bool increment = true;
+
     [SerializeField]
-    float value = 0.5f;
+    private float value = 0.5f;
+
     [SerializeField]
-    float maxvalue = 50.0f;
+    private float maxvalue = 50.0f;
+
     [SerializeField]
-    float minvalue = 0.0f;
-    void Awake()
+    private float minvalue = 0.0f;
+
+    private void Awake()
     {
         volume.profile.TryGetSettings(out bloom);
     }
 
     // Update is called once per frame
-    void Update()
+    private void Update()
     {
         if (increment)
         {

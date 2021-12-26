@@ -8,7 +8,7 @@ public class Parallax : MonoBehaviour
 
     public float ScrollSpeed { get => scrollSpeed; set => scrollSpeed = value; }
 
-    private void Awake()
+    private void Start()
     {
         parallaxObj = FindObjectOfType<MeshRenderer>();
     }

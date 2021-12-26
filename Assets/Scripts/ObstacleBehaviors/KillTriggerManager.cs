@@ -14,8 +14,6 @@ public class KillTriggerManager : NetworkBehaviour
     {
         if (manager.Running)
         {
-            Debug.Log($"manager.Running = {manager.Running}");
-            Debug.Log($"localPlayer = {player.isLocalPlayer}");
             if (player.isLocalPlayer)
             {
                 ClientKill(player);
@@ -27,12 +25,13 @@ public class KillTriggerManager : NetworkBehaviour
     [Client]
     private void ClientKill(NetPlayerScript player)
     {
-        FindObjectOfType<EndGameUIScript>().ShowLose(player.PlayerName);
+        if (manager.PlayerCount > 2)
+            FindObjectOfType<EndGameUIScript>().ShowLose(player.PlayerName);
         Instantiate(deathEffect, NetworkClient.connection.identity.transform);
         StartCoroutine(shake.ShakeCam(0.15f, 0.4f));
     }
 
-    private void Awake()
+    private void Start()
     {
         if (!(manager = FindObjectOfType<GameManager>()))
             Debug.LogError($"{ToString()}: manager not found");

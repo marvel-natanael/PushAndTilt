@@ -38,7 +38,7 @@ public class LobbyManager : NetworkBehaviour
     /// </summary>
     /// <param name="state">New value</param>
     [Server]
-    public void ServerSetReadyCount(bool state)
+    private void ServerSetReadyCount(bool state)
     {
         if (state)
         {
@@ -83,6 +83,25 @@ public class LobbyManager : NetworkBehaviour
     }
 
     [Server]
+    public void ServerOnClientDisconnect()
+    {
+        if (readyCount > 0)
+        {
+            foreach (var conn in NetworkServer.connections)
+            {
+                conn.Value.identity.GetComponent<NetPlayerScript>().ServerSetPlayerReadyState(false);
+            }
+            readyCount = 0;
+            if (isCounting)
+            {
+                ServerAbortCountDown();
+                RpcAbortCountDown();
+            }
+            RpcDisconnect();
+        }
+    }
+
+    [Server]
     private void ServerStartCountDown(float time)
     {
         Invoke(nameof(ServerStartGame), time);
@@ -98,7 +117,6 @@ public class LobbyManager : NetworkBehaviour
     private void ServerStartGame()
     {
         manager.ServerStartGame();
-        manager.ServerSetAlivePlayerCount(NetworkServer.connections.Count);
         RpcDestroyLobbyUI();
         ServerMakeEveryoneAlive();
     }
@@ -193,6 +211,12 @@ public class LobbyManager : NetworkBehaviour
     private void RpcDestroyLobbyUI()
     {
         Destroy(lobbyUI.gameObject);
+    }
+
+    [ClientRpc]
+    private void RpcDisconnect()
+    {
+        localReady = false;
     }
 
     #endregion ClientRPCs

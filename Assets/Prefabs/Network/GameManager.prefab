@@ -63,10 +63,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  playersConnected: 0
+  netManager: {fileID: 0}
   running: 0
+  playersConnected: 0
   playerAlive: 0
   newPlayerName: 
-  showGUI: 0
-  guiOffset: {x: 0, y: 75}
-  players: []
+  guiOffset: {x: 0, y: 300}
+  showGUI: 1

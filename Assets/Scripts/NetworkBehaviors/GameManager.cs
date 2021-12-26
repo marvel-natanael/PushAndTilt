@@ -17,9 +17,6 @@ public class GameManager : NetworkBehaviour
     [SerializeField, SyncVar] private int playerAlive;
     [SerializeField, SyncVar(hook = nameof(HookNewPlayerName))] private string newPlayerName;
 
-    [Header("GUI settings")]
-    [SerializeField] private bool showGUI;
-
     [SerializeField] private Vector2 guiOffset;
     private readonly SyncList<string> players = new SyncList<string>();
 
@@ -45,6 +42,7 @@ public class GameManager : NetworkBehaviour
         {
             conn.Value.identity.GetComponent<NetPlayerScript>().ServerSetPlayerAliveState(true);
         }
+        ServerSetAlivePlayerCount(playersConnected);
     }
 
     /// <summary>
@@ -62,8 +60,30 @@ public class GameManager : NetworkBehaviour
     /// </summary>
     /// <param name="count">New count</param>
     [Server]
-    public void ServerSetPlayerCount(int count)
+    public void ServerSetPlayerCount(int count, NetworkConnection conn = null)
     {
+        if (playersConnected > count)
+        {
+            var player = conn.identity.GetComponent<NetPlayerScript>();
+            //  Detect if there's any player alive
+            if (playerAlive > 0)
+            {
+                //  Game has run, but we don't know if the game is still running or not
+                if (running)
+                {
+                    //  Game is still running
+                    ServerDecreaseAlivePlayer(player.PlayerName);
+                }
+            }
+            else
+            {
+                //  Game hasn't run yet (still in lobby)
+                //  Call a LobbyManager function to do verification
+                if (players.Contains(player.PlayerName))
+                    players.Remove(player.PlayerName);
+                FindObjectOfType<LobbyManager>().ServerOnClientDisconnect();
+            }
+        }
         playersConnected = count;
     }
 
@@ -116,8 +136,16 @@ public class GameManager : NetworkBehaviour
     [Server]
     public void ServerSetNewPlayerName(string name)
     {
-        newPlayerName = name;
-        players.Add(name);
+        if (!players.Contains(name))
+        {
+            newPlayerName = name;
+            players.Add(name);
+        }
+        else
+        {
+            newPlayerName = $"{name}'s clone";
+            players.Add(newPlayerName);
+        }
     }
 
     /// <summary>
@@ -154,7 +182,7 @@ public class GameManager : NetworkBehaviour
     public void CmdSetNewPlayerName(string name, NetworkConnectionToClient conn = null)
     {
         ServerSetNewPlayerName(name);
-        conn.identity.GetComponent<NetPlayerScript>().ServerSetPlayerName(name);
+        conn.identity.GetComponent<NetPlayerScript>().ServerSetPlayerName(newPlayerName);
     }
 
     #endregion Commands
@@ -187,6 +215,7 @@ public class GameManager : NetworkBehaviour
 
     public override void OnStartServer()
     {
+        Start();
         playersConnected = NetworkServer.connections.Count;
         running = false;
         playerAlive = 0;
@@ -196,11 +225,12 @@ public class GameManager : NetworkBehaviour
 
     public override void OnStartClient()
     {
+        Start();
         CmdSetNewPlayerName(netManager.LocalPlayerName);
         base.OnStartClient();
     }
 
-    private void Awake()
+    private void Start()
     {
         if (!(netManager = FindObjectOfType<MyNetworkManager>()))
         {
@@ -212,11 +242,22 @@ public class GameManager : NetworkBehaviour
         }
     }
 
+#if UNITY_EDITOR
+
+    [Header("GUI settings")]
+    [SerializeField] private bool showGUI;
+
     private void OnGUI()
     {
         if (!showGUI) return;
         GUILayout.BeginArea(new Rect(10 + guiOffset.x, 40 + guiOffset.y, 215, 9999));
-        if (GUILayout.Button(running ? "stop" : "run")) Running_Switch();
+        GUILayout.Label($"Registered player names:");
+        foreach (var name in players)
+        {
+            GUILayout.Label(name);
+        }
         GUILayout.EndArea();
     }
+
+#endif
 }

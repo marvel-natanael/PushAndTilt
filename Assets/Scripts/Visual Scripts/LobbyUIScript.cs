@@ -7,15 +7,25 @@ using Mirror;
 
 public class LobbyUIScript : MonoBehaviour
 {
-    private GameManager gameManager;
     private MyNetworkManager netManager;
-    private LobbyManager manager;
+    private LobbyManager lobbbyManager;
 
     [SerializeField] private GameObject playerJoinPrefab;
     [SerializeField] private GameObject errorLabelPrefab;
     [SerializeField] private TextMeshProUGUI hostNameLabel;
     [SerializeField] private TextMeshProUGUI statusLabel;
     [SerializeField] private TextMeshProUGUI countDownNumberLabel;
+
+    public void Start()
+    {
+        if (!(netManager = FindObjectOfType<MyNetworkManager>()))
+        {
+            Debug.LogError($"{ToString()}: netManager not found");
+        }
+        hostNameLabel.text = "Host Name: " + netManager.HostName;
+        statusLabel.text = "Waiting for players...";
+        CW_numEmpty();
+    }
 
     public void UI_ShowJoined(string name)
     {
@@ -31,7 +41,10 @@ public class LobbyUIScript : MonoBehaviour
 
     public void Button_SetReady()
     {
-        manager.CmdSetPlayerReadyState(!manager.LocalReady);
+        if (lobbbyManager = FindObjectOfType<LobbyManager>())
+            lobbbyManager.CmdSetPlayerReadyState(!lobbbyManager.LocalReady);
+        else
+            Debug.LogError($"{ToString()}: lobbyManager not found");
     }
 
     public void CW_numUpdate(float time)
@@ -42,28 +55,5 @@ public class LobbyUIScript : MonoBehaviour
     public void CW_numEmpty()
     {
         countDownNumberLabel.text = string.Empty;
-    }
-
-    private void Awake()
-    {
-        if (!(netManager = FindObjectOfType<MyNetworkManager>()))
-        {
-            Debug.LogError($"{ToString()}: netManager not found");
-        }
-        if (!(gameManager = FindObjectOfType<GameManager>()))
-        {
-            Debug.LogError($"{ToString()}: gameManager not found");
-        }
-        if (!(manager = FindObjectOfType<LobbyManager>()))
-        {
-            Debug.LogError($"{ToString()}: lobbyManager not found");
-        }
-    }
-
-    private void Start()
-    {
-        hostNameLabel.text = "Host Name: " + netManager.HostName;
-        statusLabel.text = "Waiting for players...";
-        CW_numEmpty();
     }
 }

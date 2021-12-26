@@ -71,6 +71,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 10c46b4bf02db0c4aafdd2596d46982e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  grindEffect: {fileID: 5595847908699610217}
 --- !u!1 &2725418173437598949
 GameObject:
   m_ObjectHideFlags: 0

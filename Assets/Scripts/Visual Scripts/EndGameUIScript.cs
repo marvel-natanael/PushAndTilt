@@ -10,11 +10,14 @@ public class EndGameUIScript : MonoBehaviour
     [SerializeField] private GameObject winObj;
     [SerializeField] private GameObject loseObj;
     [SerializeField] private TextMeshProUGUI endText;
+    [SerializeField] private GameObject endGameButton;
 
     public void ShowWin(string name)
     {
         winObj.gameObject.SetActive(true);
         endText.gameObject.SetActive(true);
+        if (!endGameButton.activeSelf)
+            endGameButton.SetActive(true);
         endText.text = $"{name} have won the game!";
     }
 
@@ -22,7 +25,9 @@ public class EndGameUIScript : MonoBehaviour
     {
         loseObj.gameObject.SetActive(true);
         endText.gameObject.SetActive(true);
-        Instantiate(bnwVfxPrefab);
+        endGameButton.SetActive(true);
+        var bnw = Instantiate(bnwVfxPrefab);
+        bnw.SetActive(true);
         endText.text = $"Sorry {name}, better luck next time!";
     }
 
@@ -31,7 +36,7 @@ public class EndGameUIScript : MonoBehaviour
         netManager.Disconnect();
     }
 
-    private void Awake()
+    private void Start()
     {
         if (!(netManager = FindObjectOfType<MyNetworkManager>()))
         {

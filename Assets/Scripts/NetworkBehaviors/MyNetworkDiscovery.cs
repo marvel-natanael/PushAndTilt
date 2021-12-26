@@ -25,14 +25,13 @@ public class MyNetworkDiscovery : NetworkDiscoveryBase<DiscoveryRequest, Discove
 {
     private ServerBrowserScript serverBrowser;
     private MyNetworkManager netManager;
-    private GameManager manager;
 
     public override void Start()
     {
-        base.Start();
         serverBrowser = GameObject.FindGameObjectWithTag("serverBrowser").GetComponent<ServerBrowserScript>();
-        netManager = FindObjectOfType<MyNetworkManager>();
-        manager = FindObjectOfType<GameManager>();
+        if (!(netManager = FindObjectOfType<MyNetworkManager>()))
+            Debug.LogError($"{ToString()}: netManager not found");
+        base.Start();
     }
 
     #region Server
@@ -96,7 +95,10 @@ public class MyNetworkDiscovery : NetworkDiscoveryBase<DiscoveryRequest, Discove
     /// <param name="endpoint">Address of the server that replied</param>
     protected override void ProcessResponse(DiscoveryResponse response, IPEndPoint endpoint)
     {
-        serverBrowser.SetData(response, endpoint.Address.ToString());
+        if (response != null)
+            serverBrowser.SetData(response, endpoint.Address.ToString());
+        else
+            Debug.LogError($"{ToString()}: Server Responce is null for whatever reason");
     }
 
     #endregion Client

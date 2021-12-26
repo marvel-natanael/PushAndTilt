@@ -28,6 +28,7 @@ public class MainMenu : MonoBehaviour
     //Transition
     public void swipeRight()
     {
+        FindObjectOfType<ServerBrowserScript>().ClearBrowserList();
         UI_CloseAllPopUps();
         mainMenu.DOAnchorPos(new Vector2(-2000, 0), 0.25f);
         serverMenu.DOAnchorPos(new Vector2(0, 0), 0.25f);

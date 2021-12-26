@@ -268,7 +268,7 @@ public class NetPlayerScript : NetworkBehaviour
 
     #endregion Hook_Functions
 
-    private void Awake()
+    private void Start()
     {
         if (!(netManager = FindObjectOfType<MyNetworkManager>()))
         {
@@ -298,10 +298,6 @@ public class NetPlayerScript : NetworkBehaviour
         {
             Debug.LogError("NetPlayerScript.cs/Awake(): manager is missing!");
         }
-    }
-
-    private void Start()
-    {
         chargeLimit = CalculateMaxVelocity();
         charRadius = GetComponent<SpriteRenderer>().bounds.size.x / 2f;
     }
