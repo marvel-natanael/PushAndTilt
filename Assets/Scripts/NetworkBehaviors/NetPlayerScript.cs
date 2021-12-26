@@ -41,6 +41,9 @@ public class NetPlayerScript : NetworkBehaviour
     private float acceleration;
 
     [SerializeField]
+    private float mobileAcceleration;
+
+    [SerializeField]
     private float speedLimit;
 
     [SerializeField, Range(0.01f, 1f)]
@@ -87,10 +90,9 @@ public class NetPlayerScript : NetworkBehaviour
     [Client]
     private void HandleMovements()
     {
-        rb.velocity = new Vector2(rb.velocity.x + speed, rb.velocity.y);
         if (Application.isMobilePlatform)
         {
-            dirX = Input.acceleration.x * acceleration;
+            dirX = Input.acceleration.x * mobileAcceleration;
             rb.velocity = new Vector2(dirX, rb.velocity.y);
         }
         else
@@ -111,6 +113,7 @@ public class NetPlayerScript : NetworkBehaviour
             {
                 speed = 0;
             }
+            rb.velocity = new Vector2(rb.velocity.x + speed, rb.velocity.y);
         }
         //X pos clamping
         {
@@ -317,5 +320,6 @@ public class NetPlayerScript : NetworkBehaviour
     private void OnValidate()
     {
         squishMultiplier = Mathf.Clamp(squishMultiplier, 0f, 1f);
+        mobileAcceleration = Mathf.Clamp(mobileAcceleration, 1f, 100f);
     }
 }

@@ -276,6 +276,7 @@ MonoBehaviour:
   squishMultiplier: 0.5
   speed: 0
   acceleration: 3
+  mobileAcceleration: 50
   speedLimit: 10
   restitution: 0.5
   playerName: 

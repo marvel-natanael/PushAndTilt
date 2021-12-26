@@ -6,7 +6,7 @@ using UnityEngine;
 public class EndGameUIScript : MonoBehaviour
 {
     private MyNetworkManager netManager;
-    [SerializeField] private GameObject bnwVfxPrefab;
+    [SerializeField] private GameObject bnwVfx;
     [SerializeField] private GameObject winObj;
     [SerializeField] private GameObject loseObj;
     [SerializeField] private TextMeshProUGUI endText;
@@ -26,8 +26,7 @@ public class EndGameUIScript : MonoBehaviour
         loseObj.gameObject.SetActive(true);
         endText.gameObject.SetActive(true);
         endGameButton.SetActive(true);
-        var bnw = Instantiate(bnwVfxPrefab);
-        bnw.SetActive(true);
+        bnwVfx.SetActive(true);
         endText.text = $"Sorry {name}, better luck next time!";
     }
 
