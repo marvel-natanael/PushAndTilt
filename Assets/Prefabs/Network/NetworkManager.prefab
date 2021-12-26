@@ -63,6 +63,7 @@ MonoBehaviour:
   spawnPrefabs:
   - {fileID: 3771305681486372477, guid: 7895acda6d3712f4591b8f6ced438455, type: 3}
   - {fileID: 8530771638233185060, guid: 021fddba3b37a4e41b6a090bf0f7991a, type: 3}
+  drawGUI: 1
 --- !u!114 &7611857934969207970
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -103,4 +104,4 @@ MonoBehaviour:
   secretHandshake: 6838635851424460654
   serverBroadcastListenPort: 47777
   enableActiveDiscovery: 1
-  ActiveDiscoveryInterval: 3
+  ActiveDiscoveryInterval: 1

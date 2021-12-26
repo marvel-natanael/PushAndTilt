@@ -15,10 +15,10 @@ public class MyNetworkManager : NetworkManager
 
     public string LocalPlayerName { get => localPlayerName; set => localPlayerName = value; }
 
-    public override void OnStartHost()
+    public override void OnStartServer()
     {
-        base.OnStartHost();
         GetComponent<MyNetworkDiscovery>().AdvertiseServer();
+        base.OnStartServer();
     }
 
     public override void OnServerConnect(NetworkConnection conn)
@@ -66,7 +66,16 @@ public class MyNetworkManager : NetworkManager
                 player.CmdDie(null);
             }
         }
+        else
+        {
+            Debug.LogError($"{ToString()}: player object not found when disconnecting");
+        }
         base.OnStopClient();
+    }
+
+    public override void OnStopServer()
+    {
+        base.OnStopServer();
     }
 
     public void Disconnect()
@@ -80,4 +89,19 @@ public class MyNetworkManager : NetworkManager
             StopServer();
         }
     }
+
+#if UNITY_EDITOR
+
+    [SerializeField] private bool drawGUI;
+
+    private void OnGUI()
+    {
+        if (!drawGUI) return;
+        GUILayout.BeginArea(new Rect(0, 200, 215, 9999));
+        GUILayout.Label($"NetworkServer.active = {NetworkServer.active}");
+        GUILayout.Label($"NetworkClient.isConnected = {NetworkClient.isConnected}");
+        GUILayout.EndArea();
+    }
+
+#endif
 }

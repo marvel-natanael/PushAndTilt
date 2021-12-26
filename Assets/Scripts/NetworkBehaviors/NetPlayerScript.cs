@@ -46,9 +46,7 @@ public class NetPlayerScript : NetworkBehaviour
     [SerializeField, Range(0.01f, 1f)]
     private float restitution;
 
-#if !UNITY_EDITOR
     private float dirX, dirY;
-#endif
 
     #endregion Movement Fields
 
@@ -89,24 +87,31 @@ public class NetPlayerScript : NetworkBehaviour
     [Client]
     private void HandleMovements()
     {
-        //Horizontal Movements
-#if UNITY_EDITOR
-        if (Input.GetKey(KeyCode.D) ^ Input.GetKey(KeyCode.A))
+        rb.velocity = new Vector2(rb.velocity.x + speed, rb.velocity.y);
+        if (Application.isMobilePlatform)
         {
-            if (Input.GetKey(KeyCode.D))
-            {
-                if (speed < speedLimit) speed += Time.deltaTime * acceleration;
-            }
-            if (Input.GetKey(KeyCode.A))
-            {
-                if (speed > -speedLimit) speed -= Time.deltaTime * acceleration;
-            }
+            dirX = Input.acceleration.x * acceleration;
+            rb.velocity = new Vector2(dirX, rb.velocity.y);
         }
         else
         {
-            speed = 0;
+            //Horizontal Movements
+            if (Input.GetKey(KeyCode.D) ^ Input.GetKey(KeyCode.A))
+            {
+                if (Input.GetKey(KeyCode.D))
+                {
+                    if (speed < speedLimit) speed += Time.fixedDeltaTime * acceleration;
+                }
+                if (Input.GetKey(KeyCode.A))
+                {
+                    if (speed > -speedLimit) speed -= Time.fixedDeltaTime * acceleration;
+                }
+            }
+            else
+            {
+                speed = 0;
+            }
         }
-        rb.velocity = new Vector2(rb.velocity.x + speed, rb.velocity.y);
         //X pos clamping
         {
             if (transform.position.x + charRadius > screen.Corner_TopRight.x)
@@ -120,11 +125,6 @@ public class NetPlayerScript : NetworkBehaviour
                 rb.velocity = new Vector2(Mathf.Abs(rb.velocity.x + deep) * restitution, rb.velocity.y);
             }
         }
-#else
-            dirX = Input.acceleration.x * speed;
-            transform.position = new Vector2(Mathf.Clamp(transform.position.x, -8.5f, 8.5f), transform.position.y);
-            rb.velocity = new Vector2(dirX, rb.velocity.y);
-#endif
         //Vertical Movements
         if (rb.velocity.y == 0)
         {

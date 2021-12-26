@@ -65,7 +65,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: 1
+  m_text: 
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
   m_sharedMaterial: {fileID: 2180264, guid: 8f586378b4e144a9851e7b34d9b748ee, type: 2}
@@ -596,11 +596,9 @@ MonoBehaviour:
     type: 3}
   errorLabelPrefab: {fileID: 5662885284403653024, guid: 69706425c04103943aa14d3b611deb09,
     type: 3}
-  manager: {fileID: 0}
   hostNameLabel: {fileID: 1860217252393425011}
   statusLabel: {fileID: 6018791206862202220}
   countDownNumberLabel: {fileID: 2854370019757804654}
-  toggleReadyButton: {fileID: 6879115648094048807}
 --- !u!223 &6879115648520905630
 Canvas:
   m_ObjectHideFlags: 0

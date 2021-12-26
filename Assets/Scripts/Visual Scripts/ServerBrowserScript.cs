@@ -9,19 +9,7 @@ public class ServerBrowserScript : MonoBehaviour
     [SerializeField] private GameObject buttonTemplate;
     private Dictionary<string, GameObject> registered;
 
-    public ServerBrowserButtonScript CurrentSelected;
-
-    private void Update()
-    {
-        if (Application.platform == RuntimePlatform.Android)
-        {
-            if (Input.GetKeyDown(KeyCode.Escape))
-            {
-                GameObject.FindGameObjectWithTag("mainMenuUI").SetActive(true);
-                Destroy(gameObject);
-            }
-        }
-    }
+    [HideInInspector] public ServerBrowserButtonScript CurrentSelected;
 
     private void Awake()
     {
@@ -65,23 +53,29 @@ public class ServerBrowserScript : MonoBehaviour
     public void StartHost()
     {
         var clientField = GameObject.FindGameObjectWithTag("clientNameField").GetComponent<TMP_InputField>();
-        if (clientField.text.Length > 1)
+        var serverField = GameObject.FindGameObjectWithTag("hostNameField").GetComponent<TMP_InputField>();
+        if (clientField.text.Length > 0)
         {
-            if (!NetworkServer.active && !NetworkClient.isConnected)
+            if (serverField.text.Length > 0)
             {
-                var netManager = GameObject.FindGameObjectWithTag("networkManager").GetComponent<MyNetworkManager>();
-                if (netManager)
+                if (!NetworkServer.active && !NetworkClient.isConnected)
                 {
-                    netManager.gameObject.GetComponent<MyNetworkDiscovery>().StopDiscovery();
-                    netManager.HostName = GameObject.FindGameObjectWithTag("hostNameField").GetComponent<TMP_InputField>().text;
-                    netManager.LocalPlayerName = clientField.text;
-                    netManager.StartHost();
-                }
-                else
-                {
-                    Debug.LogError("ServerBrowserScript.cs/StartHost(): network manager is not found!");
+                    var netManager = GameObject.FindGameObjectWithTag("networkManager").GetComponent<MyNetworkManager>();
+                    if (netManager)
+                    {
+                        netManager.gameObject.GetComponent<MyNetworkDiscovery>().StopDiscovery();
+                        netManager.HostName = GameObject.FindGameObjectWithTag("hostNameField").GetComponent<TMP_InputField>().text;
+                        netManager.LocalPlayerName = clientField.text;
+                        netManager.StartHost();
+                    }
+                    else
+                    {
+                        Debug.LogError("ServerBrowserScript.cs/StartHost(): network manager is not found!");
+                    }
                 }
             }
+            else
+                serverField.transform.parent.gameObject.GetComponent<Animator>().Play("Flash");
         }
         else
         {

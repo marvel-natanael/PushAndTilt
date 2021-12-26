@@ -228,12 +228,4 @@ public class LobbyManager : NetworkBehaviour
             yield return null;
         }
     }
-
-    private void OnGUI()
-    {
-        if (!enableGUI) return;
-        GUILayout.BeginArea(new Rect(50, 200, 215, 9999));
-        if (GUILayout.Button("Force run")) ServerStartGame();
-        GUILayout.EndArea();
-    }
 }
