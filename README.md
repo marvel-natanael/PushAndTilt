@@ -1,3 +1,4 @@
+![alt text](https://www.notion.so/image/https%3A%2F%2Fs3-us-west-2.amazonaws.com%2Fsecure.notion-static.com%2F31b4f005-9c38-4c1b-8855-4224609885f6%2Fiscreamlogo.png?table=block&id=28f8f7d1-ab7d-4ff5-817c-1ced800ffa21&spaceId=12cb1e81-e420-4af9-8211-62d0a75d407c&width=250&userId=ae8b36a8-fa15-4d4d-b342-4dcc77616fd8&cache=v2)
 # iScream
 iScream is a multiplayer platformer game where you play your favorite sweets escaping the evil factory!
 
