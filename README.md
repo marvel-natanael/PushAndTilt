@@ -13,8 +13,8 @@ iScream is a multiplayer platformer game where you play your favorite sweets esc
 4. It's totally possible to push each other to oblivion 😉
 
 Player will control the Sweets with the following controls :
-Vertical : Tapping, the more you tap the higher you will jump
-Horizontal : Device tilting, the more you tilt the faster and further you will move
+- Vertical : Tapping, the more you tap the higher you will jump
+- Horizontal : Device tilting, the more you tilt the faster and further you will move
 
 # Screenshots
 
