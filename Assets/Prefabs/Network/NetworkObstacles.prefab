@@ -68,5 +68,5 @@ MonoBehaviour:
   speedMultiplier: 2
   maxSpeed: 12
   direction: 0
-  showGUI: 1
+  showGUI: 0
   guiOffset: {x: 0, y: 500}

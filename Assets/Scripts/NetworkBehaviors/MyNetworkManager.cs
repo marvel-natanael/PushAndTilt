@@ -1,6 +1,7 @@
 ﻿using Mirror;
 using UnityEngine;
 using System.Collections.Generic;
+using System.Collections;
 
 public class MyNetworkManager : NetworkManager
 {
@@ -17,6 +18,10 @@ public class MyNetworkManager : NetworkManager
 
     public override void OnStartServer()
     {
+        if (string.IsNullOrEmpty(hostName))
+        {
+            hostName = networkAddress;
+        }
         GetComponent<MyNetworkDiscovery>().AdvertiseServer();
         base.OnStartServer();
     }
@@ -47,6 +52,20 @@ public class MyNetworkManager : NetworkManager
         {
             StopServer();
         }
+    }
+
+    public void ResetGame()
+    {
+        ServerChangeScene(onlineScene);
+    }
+
+    private IEnumerator RestartGame()
+    {
+        StopServer();
+        Debug.Log($"Server Stopped");
+        yield return new WaitForSeconds(5);
+        StartServer();
+        Debug.Log($"Server Started");
     }
 
 #if UNITY_EDITOR

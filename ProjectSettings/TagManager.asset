@@ -17,6 +17,7 @@ TagManager:
   - clientNameField
   - lobbyUI
   - deathPoint
+  - directConnectInputField
   layers:
   - Default
   - TransparentFX

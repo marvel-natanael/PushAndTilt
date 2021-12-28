@@ -6,7 +6,6 @@ public class GameScreen : NetworkBehaviour
 {
     [SerializeField, SyncVar] private Vector2 corner_BottomLeft;
     [SerializeField, SyncVar] private Vector2 corner_TopRight;
-    [SerializeField] private bool showGUI;
     [SerializeField] private Vector2 guiOffset;
 
     public Vector2 Corner_TopRight { get => corner_TopRight; }
@@ -42,6 +41,8 @@ public class GameScreen : NetworkBehaviour
         Debug.Log("corner_TopRight.y = " + corner_TopRight.y);
         Debug.Log("corner_BottomLeft.x = " + corner_BottomLeft.x);
         Debug.Log("corner_BottomLeft.y = " + corner_BottomLeft.y);
+        Debug.Log($"worldWidth = {ScreenWidth_inWorldUnits}");
+        Debug.Log($"worldHeight= {ScreenHeight_inWorldUnits}");
     }
 
     public override void OnStartServer()
@@ -50,6 +51,10 @@ public class GameScreen : NetworkBehaviour
         base.OnStartServer();
     }
 
+#if UNITY_EDITOR
+
+    [SerializeField] private bool showGUI;
+
     private void OnGUI()
     {
         if (!showGUI) return;
@@ -57,4 +62,6 @@ public class GameScreen : NetworkBehaviour
         if (GUILayout.Button("Show data")) ShowData();
         GUILayout.EndArea();
     }
+
+#endif
 }

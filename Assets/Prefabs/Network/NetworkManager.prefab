@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7611857934969207999}
   - component: {fileID: 7611857934969207970}
   - component: {fileID: 3777005289208836005}
+  - component: {fileID: 2439251638750605801}
   m_Layer: 0
   m_Name: NetworkManager
   m_TagString: networkManager
@@ -63,7 +64,7 @@ MonoBehaviour:
   spawnPrefabs:
   - {fileID: 3771305681486372477, guid: 7895acda6d3712f4591b8f6ced438455, type: 3}
   - {fileID: 8530771638233185060, guid: 021fddba3b37a4e41b6a090bf0f7991a, type: 3}
-  drawGUI: 1
+  drawGUI: 0
 --- !u!114 &7611857934969207970
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -105,3 +106,17 @@ MonoBehaviour:
   serverBroadcastListenPort: 47777
   enableActiveDiscovery: 1
   ActiveDiscoveryInterval: 3
+--- !u!114 &2439251638750605801
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 7611857934969207968}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: bc654f29862fc2643b948f772ebb9e68, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  color: {r: 1, g: 1, b: 1, a: 1}
+  padding: 2

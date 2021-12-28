@@ -10,6 +10,7 @@ public class MainMenu : MonoBehaviour
     private bool isShown = false;
     private bool isMusicOn, isSfxOn;
     private bool isServerBrowser = false;
+    public bool directConnectActive;
     public Button musicButton, sfxButton;
     public Sprite musicOn, musicOff, sfxOn, sfxOff;
     public GameObject creditsObj;
@@ -114,7 +115,15 @@ public class MainMenu : MonoBehaviour
         {
             if (isServerBrowser)
             {
-                swipeLeft();
+                if (directConnectActive)
+                {
+                    FindObjectOfType<ServerBrowserScript>().UI_HideDirectConnect();
+                    directConnectActive = false;
+                }
+                else
+                {
+                    swipeLeft();
+                }
             }
             else
             {

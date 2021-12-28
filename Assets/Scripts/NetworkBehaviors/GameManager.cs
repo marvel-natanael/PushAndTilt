@@ -1,7 +1,6 @@
 ﻿using Mirror;
 using UnityEngine;
-using System.Collections.Generic;
-using System.Collections;
+using UnityEngine.SceneManagement;
 
 public class GameManager : NetworkBehaviour
 {
@@ -18,6 +17,7 @@ public class GameManager : NetworkBehaviour
     [SerializeField, SyncVar(hook = nameof(HookNewPlayerName))] private string newPlayerName;
 
     [SerializeField] private Vector2 guiOffset;
+    private bool gameIsFinished;
     private readonly SyncList<string> players = new SyncList<string>();
 
     #endregion Fields
@@ -62,6 +62,16 @@ public class GameManager : NetworkBehaviour
     [Server]
     public void ServerSetPlayerCount(int count, NetworkConnection conn = null)
     {
+        if (isServerOnly)
+        {
+            if (gameIsFinished)
+            {
+                if (count == 0)
+                {
+                    netManager.ResetGame();
+                }
+            }
+        }
         if (playersConnected > count)
         {
             var player = conn.identity.GetComponent<NetPlayerScript>();
@@ -119,6 +129,7 @@ public class GameManager : NetworkBehaviour
                 {
                     ServerSetRunningState(false);
                     RpcShowWinner(players[0]);
+                    gameIsFinished = true;
                 }
             }
             else

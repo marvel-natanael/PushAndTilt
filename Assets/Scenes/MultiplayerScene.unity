@@ -1594,8 +1594,8 @@ MonoBehaviour:
   syncInterval: 0.1
   corner_BottomLeft: {x: 0, y: 0}
   corner_TopRight: {x: 0, y: 0}
-  showGUI: 0
   guiOffset: {x: 0, y: 0}
+  showGUI: 0
 --- !u!114 &1964321134
 MonoBehaviour:
   m_ObjectHideFlags: 0

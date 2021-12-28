@@ -69,4 +69,4 @@ MonoBehaviour:
   playerAlive: 0
   newPlayerName: 
   guiOffset: {x: 0, y: 300}
-  showGUI: 1
+  showGUI: 0
