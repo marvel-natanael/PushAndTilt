@@ -33,8 +33,7 @@ Player will control the Sweets with the following controls :
 2. In portal.azure.com choose virtual machine
 3. Fill in the spesifications according to your needs and then choose create
 4. After created, you should get a Public IP and Private IP
-5. Open Unity, input your Private IP in your network manager
-6. Choose server build and build your server
-7. Input your public IP as target IP to connect to server
-8. Deploy your server to the Virtual Machine
-9. Run the server, now clients can connect to your game
+5. Open Unity, Choose server build and build your server
+6. Input your public IP as target IP to connect to server
+7. Deploy your server to the Virtual Machine
+8. Run the server, now clients can connect to your game
