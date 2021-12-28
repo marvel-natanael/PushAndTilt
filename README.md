@@ -34,6 +34,7 @@ Player will control the Sweets with the following controls :
 3. Fill in the spesifications according to your needs and then choose create
 4. After created, you should get a Public IP and Private IP
 5. Build your server & compress to zip
-6. Using command prompt, connect to Virtual Machine and upload the .zip file
-7. Using Putty, unzip the files and mark server build as executable
-8. Run the server, now clients can connect to your game
+6. For steps 7-9, please refer to https://mirror-networking.gitbook.io/docs/faq/server-hosting
+7. Using command prompt, connect to Virtual Machine and upload the .zip file
+8. Using Putty, unzip the files and mark server build as executable
+9. Run the server, now clients can connect to your game
