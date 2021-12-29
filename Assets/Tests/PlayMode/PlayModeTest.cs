@@ -15,12 +15,31 @@ public class PlayModeTest
         SceneManager.LoadScene("Menu");
     }
 
-    //Start match as host Test Scenario
+    [UnityTest]
+    public IEnumerator JoinOnlineMatchTest()
+    {
+        //1.
+        var playButtonObject = GameObject.Find("Play Button");
+        var playButton = playButtonObject.GetComponent<Button>();
+        playButton.onClick.Invoke();
+        //2.
+        var hostOptionPlayerName = GameObject.Find("NetworkOptionsClientName_inputField");
+        var hostOptionPlayerNameText = hostOptionPlayerName.GetComponentInChildren<TMP_InputField>();
+        hostOptionPlayerNameText.text = "dummy";
+        Assert.AreEqual("dummy", hostOptionPlayerNameText.text);
+
+        var startGameButtonObject = GameObject.Find("HostOption_directConnect");
+        var startGameButton = startGameButtonObject.GetComponent<Button>();
+        startGameButton.onClick.Invoke();
+        yield return new WaitForSeconds(3);
+    }
+
+    //Start local match as host Test Scenario
     //1. Click Play Button
     //2. Start a game as host
     //3. Player spawned
     [UnityTest]
-    public IEnumerator StartMatchTest()
+    public IEnumerator StartLocalMatchTest()
     {
         //1.
         var playButtonObject = GameObject.Find("Play Button");
@@ -52,12 +71,12 @@ public class PlayModeTest
         Assert.AreEqual(PlayerNameText, hostOptionHostNameText.text);
     }
 
-    //Join match as client Test Scenario
+    //Join local match as client Test Scenario
     //1. Click Play Button
     //2. Join an already running game
     //3. Player spawned
     [UnityTest]
-    public IEnumerator JoinMatchTest()
+    public IEnumerator JoinLocalMatchTest()
     {
         //1.
         var playButtonObject = GameObject.Find("Play Button");

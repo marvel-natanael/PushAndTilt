@@ -1599,7 +1599,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -825, y: 450}
+  m_AnchoredPosition: {x: -875, y: 450}
   m_SizeDelta: {x: 120, y: 120}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &496682953
@@ -2753,6 +2753,11 @@ PrefabInstance:
   m_Modification:
     m_TransformParent: {fileID: 1179884706}
     m_Modifications:
+    - target: {fileID: 1335674616651654242, guid: c285d14d3cc180e4eb764745c8757de9,
+        type: 3}
+      propertyPath: m_Text
+      value: Join an Online match
+      objectReference: {fileID: 0}
     - target: {fileID: 2595540131109739603, guid: c285d14d3cc180e4eb764745c8757de9,
         type: 3}
       propertyPath: m_Pivot.x
@@ -2877,6 +2882,11 @@ PrefabInstance:
         type: 3}
       propertyPath: m_AnchorMax.y
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 4442943249253410416, guid: c285d14d3cc180e4eb764745c8757de9,
+        type: 3}
+      propertyPath: m_Text
+      value: Host a local match
       objectReference: {fileID: 0}
     - target: {fileID: 6837039079013358761, guid: c285d14d3cc180e4eb764745c8757de9,
         type: 3}
